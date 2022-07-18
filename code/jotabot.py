@@ -119,7 +119,7 @@ async def help_command(ctx):
 
 #---------Run---------#  
 
-with open("..\botToken.txt", "r") as file:
+with open("../botToken.txt", "r") as file:
     token = file.read()
     print(f'Token = "{token}"')
 
