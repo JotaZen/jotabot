@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands as d_commands
 from discord.utils import get
+from discord_components import Button, DiscordComponents
+
 from datetime import datetime
 import random
 import os
@@ -11,14 +13,7 @@ from commands import help_commands as hc, yTube, simple_commands as simple
 
 
 bot = d_commands.Bot(command_prefix="")
-
-#--------HELP--------#
-@bot.command(aliases = ["-help","-?","-ayuda","-h", "-db"])
-async def help_command(ctx): 
-    if ctx.message.content == "-db": 
-        await ctx.send(hc.datab_commands.get())  
-    else: 
-        await ctx.send(hc.help_commands.get())  
+DiscordComponents(bot) 
             
 #---------Events---------#
 @bot.event
@@ -39,21 +34,16 @@ async def on_message(message):
         await message.channel.send(embed=embed)
     await bot.process_commands(message)   
 
-#---------YouTube---------#
-
-@bot.command()
-async def yt(ctx,*, search): await ctx.send(yTube.ytSearch(search))
-
-@bot.command()
-async def ytlist(ctx): await ctx.send(yTube.dwList(separator = ">"))  
-
-@bot.command()
-async def ytdwl(ctx, *, search): 
-    yTube.ytDownload(search)
-    await ctx.send(yTube.ytSearch(search))
-
 #---------Test---------#
     
+@bot.command()
+async def test(ctx):
+    await ctx.send("aaaaaa",       
+        components = [Button(label = "papa", custom_id = "papa")])
+    interaction = await bot.wait_for("button_click", check = lambda x: x.custom_id == "papa")
+    await interaction.send("xd")
+
+
 @bot.command()
 async def scramshot(ctx):
     myScreenshot = pyautogui.screenshot()
@@ -69,7 +59,20 @@ async def scramshow(ctx):
 
 @bot.command()
 async def scram(ctx, index):
-    await ctx.send(file=discord.File(f"../files/ss/{index}.png"))              
+    await ctx.send(file=discord.File(f"../files/ss/{index}.png")) 
+
+#---------YouTube---------#
+
+@bot.command()
+async def yt(ctx,*, search): await ctx.send(yTube.ytSearch(search))
+
+@bot.command()
+async def ytlist(ctx): await ctx.send(yTube.dwList(separator = ">"))  
+
+@bot.command()
+async def ytdwl(ctx, *, search): 
+    yTube.ytDownload(search)
+    await ctx.send(yTube.ytSearch(search))            
     
 #---------Commands---------#
 
@@ -105,6 +108,14 @@ async def venbot(ctx):
 async def salbot(ctx):
     voice = get(bot.voice_clients, guild = ctx.guild)
     await voice.disconnect()
+
+#--------HELP--------#
+@bot.command(aliases = ["-help","-?","-ayuda","-h", "-db"])
+async def help_command(ctx): 
+    if ctx.message.content == "-db": 
+        await ctx.send(hc.datab_commands.get())  
+    else: 
+        await ctx.send(hc.help_commands.get()) 
 
 #---------Run---------#  
 
