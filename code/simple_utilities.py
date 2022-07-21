@@ -9,3 +9,4 @@ def wordDetector(sentence: str, detect: str) -> bool:
 
 def asdasaasda():
     pass
+asdasdasdasd = 1
