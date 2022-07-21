@@ -9,7 +9,7 @@ screenshot_limit = {
     "limit" : 10    
 }
 
-limit_data      = lambda key: screenshot_limit[key]
+limitData      = lambda key: screenshot_limit[key]
 screenshotLimit = lambda: len(os.listdir(directory)) >= screenshot_limit["limit"]
 screenshotList  = lambda separator = ">": f"{separator} " + '\n- '.join(os.listdir(directory))
 

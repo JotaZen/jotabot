@@ -46,7 +46,7 @@ async def test(ctx):
 
 @bot.command()
 async def scramshot(ctx):
-    if SS.screenshotLimit(): await ctx.send(SS.limit_data("message"))
+    if SS.screenshotLimit(): await ctx.send(SS.limitData("message"))
     else: await ctx.send(file = discord.File(SS.screenshot()))
 
 @bot.command()
