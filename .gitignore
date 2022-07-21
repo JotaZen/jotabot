@@ -2,5 +2,5 @@ __pycache__/
 
 botToken.txt
 venv/
-files/ss/*
-files/ytDownloads/*
+files/ss/*.jpg
+files/ytDownloads/*.3gpp
