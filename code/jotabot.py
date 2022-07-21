@@ -54,8 +54,8 @@ async def scramshow(ctx):
     await ctx.send(SS.screenshotList())
 
 @bot.command()
-async def scram(ctx, index):
-    await ctx.send(file=discord.File(f"../files/ss/{index}.png")) 
+async def scram(ctx):
+    SS.test()
 
 #---------YouTube---------#
 
