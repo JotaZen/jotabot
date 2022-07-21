@@ -8,7 +8,7 @@ class Help:
         self.description = description
         self.commands = commands
 
-    def get(self, separator = ">",):
+    def getList(self, separator = ">",):
         return f"{separator} {self.description}\n> "+ f"\n{separator} ".join(self.commands)
 
 help_commands = Help(

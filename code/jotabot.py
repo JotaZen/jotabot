@@ -10,7 +10,7 @@ import simple_utilities as Sp
 import pyautogui
 
 from commands import help_commands as hc, yTube, simple_commands as simple
-
+from commands import screenshots as SS
 
 bot = d_commands.Bot(command_prefix="")
 DiscordComponents(bot) 
@@ -46,16 +46,12 @@ async def test(ctx):
 
 @bot.command()
 async def scramshot(ctx):
-    myScreenshot = pyautogui.screenshot()
-    i_ss = len(os.listdir("../files/ss/")) +1
-    myScreenshot.save(f"../files/ss/{i_ss}.png")
-    await ctx.send(file=discord.File(f"../files/ss/{i_ss}.png"))  
+    if SS.screenshotLimit(): await ctx.send(SS.limit_data("message"))
+    else: await ctx.send(file = discord.File(SS.screenshot()))
 
 @bot.command()
-async def scramshow(ctx):
-    sss = os.listdir("../files/ss")
-    sss = "> " + "\n- ".join(sss)            
-    await ctx.send(sss)
+async def scramshow(ctx):         
+    await ctx.send(SS.screenshotList())
 
 @bot.command()
 async def scram(ctx, index):
@@ -113,9 +109,9 @@ async def salbot(ctx):
 @bot.command(aliases = ["-help","-?","-ayuda","-h", "-db"])
 async def help_command(ctx): 
     if ctx.message.content == "-db": 
-        await ctx.send(hc.datab_commands.get())  
+        await ctx.send(hc.datab_commands.getList())  
     else: 
-        await ctx.send(hc.help_commands.get()) 
+        await ctx.send(hc.help_commands.getList()) 
 
 #---------Run---------#  
 
