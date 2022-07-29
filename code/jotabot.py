@@ -3,6 +3,8 @@ from discord.ext import commands as d_commands
 from discord.utils import get
 from discord_components import Button, DiscordComponents
 
+from jotabot2 import *
+
 from datetime import datetime
 import random
 import os
@@ -16,6 +18,7 @@ bot = d_commands.Bot(command_prefix="")
 DiscordComponents(bot) 
             
 #---------Events---------#
+
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name="Hollow Knight: Silksong"))
@@ -106,12 +109,9 @@ async def salbot(ctx):
     await voice.disconnect()
 
 #--------HELP--------#
-@bot.command(aliases = ["-help","-?","-ayuda","-h", "-db"])
+@bot.command(aliases = hc.help_commands.getAllCommands())
 async def help_command(ctx): 
-    if ctx.message.content == "-db": 
-        await ctx.send(hc.datab_commands.getList())  
-    else: 
-        await ctx.send(hc.help_commands.getList()) 
+    await ctx.send(hc.helpPicker(ctx.message.content).getListStr()) 
 
 #---------Run---------#  
 

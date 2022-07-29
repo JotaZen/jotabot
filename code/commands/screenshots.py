@@ -9,13 +9,13 @@ screenshot_limit = {
     "limit" : 10    
 }
 
-limitData      = lambda key: screenshot_limit[key]
+limitData       = lambda key: screenshot_limit[key]
 screenshotLimit = lambda: len(os.listdir(directory)) >= screenshot_limit["limit"]
 screenshotList  = lambda separator = ">": f"{separator} " + '\n- '.join(os.listdir(directory))
 
 def screenshot(): 
     my_screenshot = pyautogui.screenshot()
-    if len(os.listdir(directory)) != 0:
+    if len(os.listdir(directory)) > 0:
         last_ss       = os.listdir(directory)[-1]
         last_ss       = last_ss.split()
         new_ss_index  = int(last_ss[0].replace("[", "").replace("]", "")) + 1
@@ -30,5 +30,6 @@ def showScreenshot(name): pass
 
 def test():
     print(os.listdir(directory)[-1])
+
 
 
