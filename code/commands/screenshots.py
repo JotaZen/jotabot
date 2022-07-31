@@ -1,12 +1,14 @@
+from commands.config import ScreenshotSettings as SS 
+
 import pyautogui
 import os
 from datetime import date
 
-directory        = "../files/ss"
+directory        = SS.settings["directory"]
 
 screenshot_limit = {
-    "message" : f"Se alcanzó el límite de 100 Capturas",
-    "limit" : 10    
+    "limit" : SS.settings["screenshot_limit"],
+    "message" : f'Se alcanzó el límite de {SS.settings["screenshot_limit"]} Capturas'       
 }
 
 limitData       = lambda key: screenshot_limit[key]

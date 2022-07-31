@@ -1,63 +1,55 @@
-
+from typing import List, Dict
 class Help:
    
     all_instances = []
-
-    def __init__(self, name, command, aliases, title, description, commands):  
+   
+    def __init__(self, name: str, command: str, aliases: list, title: str, description: str, commands: List) -> None:  
         self.name        = name
         self.command     = command
         self.aliases     = aliases
         self.title       = title
         self.description = description
-        self.commands    =  [
-        {    
-            "name" : i[0],
+        self.commands    =  [          
+            {    
+            "command" : i[0],
             "description" : i[1],
             "type" : i[2],
             "aliases"  : i[3]
-        }       
+            }       
         for i in commands
-        ]
-    
-    def getCommands(self, description = False, aliases = False):
+        ]        
+        
+        self.all_instances.append(self)
+ 
+ 
+    def __str__(self) -> str:
+        return self.name
+
+    def getName(self)          : return self.name      
+    def getCommand(self)       : return self.command
+    def getAlias(self)         : return self.aliases
+    def getTitle(self)         : return self.title   
+    def getDescript(self)      : return self.description 
+             
+    def getCommandList(self, description = False, aliases = False):
         if description == False:
-            return [i["name"] for i in self.commands]
+            return [i["command"] for i in self.commands]
 
         elif description == True:
-            return [f'{i["name"]} - {i["description"]}' for i in self.commands]
-
+            return [f'{i["command"]} - {i["description"]}' for i in self.commands] 
+ 
+    
+    """DISCORD"""
+    
     def getListStr(self, separator = ">",):
         return (f"{separator} {self.title}\n> " + 
-                f"\n{separator} ".join(self.getCommands(description = True))) 
+                f"\n{separator} ".join(self.getCommands(description = True)))
+    
 
-    def getAllCommands(self):
-        all_commands = []
-        for i in self.all_instances:
-            all_commands.append(i.getCommand())
-            for j in i.getAlias():
-                all_commands.append(j)
-        return all_commands
 
-    def getInstances(self, name = False):
-        if name == False: return self.all_instances
-        else:
-            instances_names = []
-            for i in self.all_instances:
-                instances_names.append(i.name)
-            return instances_names
-   
-    getAlias     = lambda self: self.aliases
-
-    getCommand   = lambda self: self.command
-
-    addInstance  = lambda self, instance: self.all_instances.append(instance)
 
 """ COMMAND TYPES: SQL, SS, YT, MAIN, GIT """
 
-"""
-NOTA: PONER UN PARAMETRO ADICIONAL PARA CUANDO SE ENVIA TEXTO PLANO O UN ARCHIVO 
-PARA ENVIAR EN DISCORD
-"""
 
 help_commands = Help(
 
@@ -88,7 +80,7 @@ help_commands = Help(
     
     ]
 )
-help_commands.addInstance(help_commands)
+
 
 databse_commands = Help(
 
@@ -112,7 +104,7 @@ databse_commands = Help(
     
     ]
 )
-databse_commands.addInstance(databse_commands)
+
 
 yTube_commands = Help(
 
@@ -134,7 +126,7 @@ yTube_commands = Help(
         ["ytlist", "Que hay descargado", "YT",[]],    
     ]
 )
-yTube_commands.addInstance(yTube_commands)
+
 
 screenshot_commands = Help(
 
@@ -156,18 +148,12 @@ screenshot_commands = Help(
         ["scram", "Muestra captura (indice de scramshow)", "SS",[]],       
     ]
 )
-screenshot_commands.addInstance(screenshot_commands)
 
-def helpPicker(message):
-    for i in help_commands.getInstances():
-        if message in i.getAlias() or message == i.getCommand():
-            return i
-    else: return "Error"
 
 #########################################################################################
 def run():
-    print(screenshot_commands.getInstances(name = True))
-    print("All Right")
+    pass
+
 
 if __name__ == "__main__":
     run()

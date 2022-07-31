@@ -1,7 +1,26 @@
+
 import mysql.connector
 
+
+"""DATABASE CONNECTION"""
+
+def connectMySQL(host="localhost", user="root", passwd=""):   
+    conection = mysql.connector.connect(host = host, user = user, passwd = passwd)
+    return conection
+
+
+def SQLCheck()->bool:    
+    try:
+        connectMySQL()
+        return True
+    except:
+        return False
+
+
+
+
 def dbList(console = False):
-    conexion1 = mysql.connector.connect(host = "localhost", user = "root", passwd = "")
+    conexion1 = connectMySQL()
     cursor1 = conexion1.cursor()
     cursor1.execute("SHOW DATABASES")
     listDB = []
@@ -24,7 +43,7 @@ def dbList(console = False):
     return dbNames
 
 def create_drop(query=""):
-    conexion1=mysql.connector.connect(host="localhost", user="root", passwd="")
+    conexion1=connectMySQL()
     print(query)
     cursor1=conexion1.cursor()
     try:
@@ -37,38 +56,13 @@ def create_drop(query=""):
         conexion1.close()
         return "*Invalid query*"
 
-def simpleQuery(query="", doc=False, dbName="test"):
-    if doc != False:
-        with open("./queries.txt", "r") as qDoc:
-            query = qDoc.read()
-    conexion1=mysql.connector.connect(host="localhost", user="root", passwd="", database=dbName)
-    print(dbName + " " + query)
-    
-    cursor1=conexion1.cursor()
-        
 
-      #aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa#  
-    try:
-        if "insert" in query.lower():
-            queryInsert = query.split("values")
-            valuesCount = tuple(['%s' for i in queryInsert[1]])
-            valuesCount = (f"Values {valuesCount}".replace("'", ""))
-            values = queryInsert[1].split()
-            cursor1.execute(queryInsert[0], values)
-
-        else: cursor1.execute(query)
-        cursor1.close()
-        conexion1.close()
-        return f"*Se ejecuto*: \"{query}\""
-    except: 
-        cursor1.close()
-        conexion1.close()
-        return "*Invalid query*"
-
+ 
+"""TEST""" 
     
 def run():
     pass     
-    
+   
 if __name__ == "__main__":
     run()
 

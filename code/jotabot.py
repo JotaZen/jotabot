@@ -3,16 +3,14 @@ from discord.ext import commands as d_commands
 from discord.utils import get
 from discord_components import Button, DiscordComponents
 
-from jotabot2 import *
-
 from datetime import datetime
-import random
-import os
-import simple_utilities as Sp
-import pyautogui
+import random, os
 
-from commands import help_commands as hc, yTube, simple_commands as simple
-from commands import screenshots as SS
+import simple_utilities as SU
+from sql import mySQL as sq
+
+from commands import (help_commands as hc, yTube, simple_commands as simple,screenshots as SS)
+
 
 bot = d_commands.Bot(command_prefix="")
 DiscordComponents(bot) 
@@ -22,14 +20,16 @@ DiscordComponents(bot)
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name="Hollow Knight: Silksong"))
+    #SQL Check#
+    if sq.SQLCheck(): print("MySQL: Active")
+    else: print("MySQL: Not active")
+    
+    #All OK#
     print("My boty is ready")
 
 @bot.event
 async def on_message(message):
-    if message.author == bot.user:return 
-    if message.content == "xd": 
-        answersFaces = ["AwA", "Owo", "Uwu", "uwu", "(๑╹ᆺ╹)"]  
-        await message.channel.send(random.choice(answersFaces))
+    if message.author == bot.user: return 
     elif "silksong" in message.content.split():
         embed = discord.Embed(title="¿Silksong?", description="Todavia no sale Silksong.", 
             timestamp=datetime.utcnow(), color=discord.Color.red())
@@ -62,16 +62,19 @@ async def scram(ctx):
 
 #---------YouTube---------#
 
-@bot.command()
-async def yt(ctx,*, search): await ctx.send(yTube.ytSearch(search))
+@bot.command(aliases = hc.yTube_commands.getCommandList())
+async def yTube__(ctx): 
+    command , extra = SU.split(ctx.message.content, first=True) , SU.split(ctx.message.content)
+    
+    if command == "yt": await ctx.send(yTube.ytSearch(extra))
+    
+    elif command == "ytlist": await ctx.send(yTube.dwList())
+    
+    elif command == "ytdwl": 
+        yTube.ytDownload(extra)
+        await ctx.send(f"Se descargó: {yTube.ytSearch(extra)}")
 
-@bot.command()
-async def ytlist(ctx): await ctx.send(yTube.dwList(separator = ">"))  
-
-@bot.command()
-async def ytdwl(ctx, *, search): 
-    yTube.ytDownload(search)
-    await ctx.send(yTube.ytSearch(search))            
+          
     
 #---------Commands---------#
 
@@ -109,7 +112,7 @@ async def salbot(ctx):
     await voice.disconnect()
 
 #--------HELP--------#
-@bot.command(aliases = hc.help_commands.getAllCommands())
+@bot.command(aliases = hc.help_commands.getAlias()+[hc.help_commands.getCommand()])
 async def help_command(ctx): 
     await ctx.send(hc.helpPicker(ctx.message.content).getListStr()) 
 
