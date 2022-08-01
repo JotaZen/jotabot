@@ -74,7 +74,15 @@ async def yTube__(ctx):
         yTube.ytDownload(extra)
         await ctx.send(f"Se descargó: {yTube.ytSearch(extra)}")
 
-          
+#---------SQL---------#          
+
+@bot.command(aliases = hc.database_commands.getCommandList())
+async def database__(ctx):
+    command , extra = SU.split(ctx.message.content, first=True) , SU.split(ctx.message.content)
+    
+    if command == "data": await ctx.send("**DATABASES**\n> " +"> \n".join(sq.dbList()))  
+    
+    elif False: pass
     
 #---------Commands---------#
 
@@ -112,7 +120,7 @@ async def salbot(ctx):
     await voice.disconnect()
 
 #--------HELP--------#
-@bot.command(aliases = hc.help_commands.getAlias()+[hc.help_commands.getCommand()])
+@bot.command(aliases = hc.helpCommands())
 async def help_command(ctx): 
     await ctx.send(hc.helpPicker(ctx.message.content).getListStr()) 
 

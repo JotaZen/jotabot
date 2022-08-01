@@ -1,4 +1,4 @@
-from commands.config import ScreenshotSettings as SS 
+from commands.config import screenshot_settings as SS 
 
 import pyautogui
 import os

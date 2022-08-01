@@ -41,9 +41,17 @@ class Help:
     
     """DISCORD"""
     
+    def getInstances(self, name = False):
+        if name == False: return self.all_instances
+        else:
+            instances_names = []
+            for i in self.all_instances:
+                instances_names.append(i.name)
+            return instances_names
+        
     def getListStr(self, separator = ">",):
         return (f"{separator} {self.title}\n> " + 
-                f"\n{separator} ".join(self.getCommands(description = True)))
+                f"\n{separator} ".join(self.getCommandList(description = True)))
     
 
 
@@ -67,12 +75,9 @@ help_commands = Help(
     #--- ["COMMAND", "DESCRIPTION", "TYPE", ["ALIASES"]] ---#
     [
         ["-db", "Comandos bases de datos", "SQL",[]],
-        ["yt", "Busca un video de YouTube", "YT",[]],
-        ["ytdwl", "Descarga YT", "YT",[]],
-        ["ytlist", "Que hay descargado", "YT",[]],
-        ["scramshot", "Captura pantalla del servidor", "SS",[]],
-        ["scramshow", "Capturas guardadas", "SS",[]],
-        ["scram", "Muestra captura (indice de scramshow)", "SS",[]],
+        ["-yt", "Comandos YouTube", "YT",[]],
+        ["-ss", "Comandos Screenshot", "YT",[]],
+
         ["-clear", "borra la cantidad de mensajes indicada(<6)", "MAIN",[]],
         ["venbot", "Bot a voz", "DISCORD",[]],
         ["salbot", "Saca al bot de voz", "DISCORD",[]],
@@ -82,14 +87,14 @@ help_commands = Help(
 )
 
 
-databse_commands = Help(
+database_commands = Help(
 
     #--- NAME ---#
     "SQL",   
     #--- COMMAND ---#
     "-db",    
     #--- ALIASES ---#                                
-    ["-database", "sql"],      
+    ["-database"],      
     #--- TITLE ---#
     "**COMANDOS BASES DE DATOS**",
     #--- DESCRIPTION ---#
@@ -133,9 +138,9 @@ screenshot_commands = Help(
     #--- NAME ---#
     "Screenshot", 
     #--- COMMAND ---#
-    "-help ss ",    
+    "-ss",    
     #--- ALIASES ---#                                
-    ["-ss"],      
+    ["-sshelp"],      
     #--- TITLE ---#
     "**COMANDOS SCREENSHOT**",
     #--- DESCRIPTION ---#
@@ -149,12 +154,28 @@ screenshot_commands = Help(
     ]
 )
 
+def helpCommands():
+    commands = []
+    for i in help_commands.getInstances():
+        commands.append(i.getCommand())
+        for j in i.getAlias():
+            commands.append(j)
+    return commands
+        
+def helpPicker(message):
+    for i in help_commands.getInstances():
+        if message in i.getAlias() or message == i.getCommand():
+            return i
+    else: return "Error"
 
 #########################################################################################
 def run():
     pass
 
 
+
+
+    
 if __name__ == "__main__":
     run()
 

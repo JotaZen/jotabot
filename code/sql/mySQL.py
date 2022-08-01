@@ -17,8 +17,6 @@ def SQLCheck()->bool:
         return False
 
 
-
-
 def dbList(console = False):
     conexion1 = connectMySQL()
     cursor1 = conexion1.cursor()

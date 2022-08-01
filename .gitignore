@@ -4,3 +4,4 @@ botToken.txt
 venv/
 files/ss/*.jpg
 files/ytDownloads/*.3gpp
+files/pdf/*.pdf
