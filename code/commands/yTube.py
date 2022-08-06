@@ -1,11 +1,12 @@
 
+from commands.config import yTube_settings as YT
 import pytube
 from urllib import parse, request
 import re
 import os
 
 
-downloads_dir = "..\..\files\ytDownloads"
+downloads_dir = YT.settings["directory"]
 
 
 def ytSearch(search, console = False, index = 0):

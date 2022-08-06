@@ -1,9 +1,8 @@
-from typing import List, Dict
 class Help:
    
     all_instances = []
    
-    def __init__(self, name: str, command: str, aliases: list, title: str, description: str, commands: List) -> None:  
+    def __init__(self, name: str, command: str, aliases: list, title: str, description: str, commands: list) -> None:  
         self.name        = name
         self.command     = command
         self.aliases     = aliases

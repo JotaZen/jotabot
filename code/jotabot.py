@@ -10,9 +10,11 @@ import simple_utilities as SU
 from sql import mySQL as sq
 
 from commands import (help_commands as hc, yTube, simple_commands as simple,screenshots as SS)
-
-
+from urls.img_urls import Img
+ 
 bot = d_commands.Bot(command_prefix="")
+sql_status = False
+
 DiscordComponents(bot) 
             
 #---------Events---------#
@@ -21,8 +23,11 @@ DiscordComponents(bot)
 async def on_ready():
     await bot.change_presence(activity=discord.Game(name="Hollow Knight: Silksong"))
     #SQL Check#
-    if sq.SQLCheck(): print("MySQL: Active")
-    else: print("MySQL: Not active")
+    if sq.SQLCheck(): 
+        sql_status = True
+        print("MySQL: Active")
+    else:             
+        print("MySQL: Not active")
     
     #All OK#
     print("My boty is ready")
@@ -33,7 +38,7 @@ async def on_message(message):
     elif "silksong" in message.content.split():
         embed = discord.Embed(title="¿Silksong?", description="Todavia no sale Silksong.", 
             timestamp=datetime.utcnow(), color=discord.Color.red())
-        embed.set_thumbnail(url="https://static.wikia.nocookie.net/hollowknight/images/1/16/Hornet_Idle.png/revision/latest?cb=20181124144744")
+        embed.set_thumbnail(url=Img.get("hornet_miniature"))
         await message.channel.send(embed=embed)
     await bot.process_commands(message)   
 
@@ -78,9 +83,13 @@ async def yTube__(ctx):
 
 @bot.command(aliases = hc.database_commands.getCommandList())
 async def database__(ctx):
+    if sql_status == False: 
+        await ctx.send("> SQL Not Active")
+        return
+    
     command , extra = SU.split(ctx.message.content, first=True) , SU.split(ctx.message.content)
     
-    if command == "data": await ctx.send("**DATABASES**\n> " +"> \n".join(sq.dbList()))  
+    if command == "data" and not extra: await ctx.send("**DATABASES**\n> " +"> \n".join(sq.dbList()))  
     
     elif False: pass
     
@@ -128,6 +137,6 @@ async def help_command(ctx):
 
 with open("../botToken.txt", "r") as file:
     token = file.read()
-    print(f'Token = "{token}"')
+    print(f'Token = "{token[0:10]}..."')
 
 bot.run(token)

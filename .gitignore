@@ -1,5 +1,6 @@
 __pycache__/
 
+*.code-workspace
 botToken.txt
 venv/
 files/ss/*.jpg
