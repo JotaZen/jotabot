@@ -1,4 +1,6 @@
 
+import json
+
 class Config:
     
     def __init__(self, settings: dict) -> None:
@@ -20,7 +22,7 @@ screenshot_settings = Config(
 
 yTube_settings = Config(
     {
-        "directory" : "../files/ss/ytDownloads",
+        "directory" : "../files/ytDownloads",
     }    
 )
 

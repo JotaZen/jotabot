@@ -1,0 +1,16 @@
+[
+    {
+        "name" : "screenshots",
+        "directory" : "../files/ss",
+        "screenshot_limit": 1
+    },     
+    {
+        "name" : "yTube",
+        "directory" : "../files/ss/ytDownloads"
+
+    },
+    {
+        "name" : "simple_commands"
+    }  
+
+]

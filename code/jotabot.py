@@ -1,7 +1,7 @@
-import discord
-from discord.ext import commands as d_commands
-from discord.utils import get
-from discord_components import Button, DiscordComponents
+import nextcord as discord
+from nextcord.ext import commands as d_commands
+from nextcord.utils import get
+
 
 from datetime import datetime
 import random, os
@@ -9,14 +9,12 @@ import random, os
 import simple_utilities as SU
 from sql import mySQL as sq
 
-from commands import (help_commands as hc, yTube, simple_commands as simple,screenshots as SS)
+from commands import (help_commands as hc, simple_commands as simple,screenshots as SS)
 from urls.img_urls import Img
- 
+
 bot = d_commands.Bot(command_prefix="")
 sql_status = False
-
-DiscordComponents(bot) 
-            
+      
 #---------Events---------#
 
 @bot.event
@@ -43,14 +41,6 @@ async def on_message(message):
     await bot.process_commands(message)   
 
 #---------Test---------#
-    
-@bot.command()
-async def test(ctx):
-    await ctx.send("aaaaaa",       
-        components = [Button(label = "papa", custom_id = "papa")])
-    interaction = await bot.wait_for("button_click", check = lambda x: x.custom_id == "papa")
-    await interaction.send("xd")
-
 
 @bot.command()
 async def scramshot(ctx):
@@ -64,20 +54,6 @@ async def scramshow(ctx):
 @bot.command()
 async def scram(ctx):
     SS.test()
-
-#---------YouTube---------#
-
-@bot.command(aliases = hc.yTube_commands.getCommandList())
-async def yTube__(ctx): 
-    command , extra = SU.split(ctx.message.content, first=True) , SU.split(ctx.message.content)
-    
-    if command == "yt": await ctx.send(yTube.ytSearch(extra))
-    
-    elif command == "ytlist": await ctx.send(yTube.dwList())
-    
-    elif command == "ytdwl": 
-        yTube.ytDownload(extra)
-        await ctx.send(f"Se descargó: {yTube.ytSearch(extra)}")
 
 #---------SQL---------#          
 
@@ -121,12 +97,13 @@ async def venbot(ctx):
     voice = get(bot.voice_clients, guild = ctx.guild)
 
     if voice: await voice.move_to(channel)           
-    else: await channel.connect()       
+    else: await channel.connect()           
 
 @bot.command()
 async def salbot(ctx):
     voice = get(bot.voice_clients, guild = ctx.guild)
-    await voice.disconnect()
+    await voice.disconnect()  
+   
 
 #--------HELP--------#
 @bot.command(aliases = hc.helpCommands())
@@ -138,5 +115,19 @@ async def help_command(ctx):
 with open("../botToken.txt", "r") as file:
     token = file.read()
     print(f'Token = "{token[0:10]}..."')
+
+for folder in os.listdir("modules"):
+    if os.path.exists(os.path.join("modules", folder, "cog.py")):
+        bot.load_extension(f"modules.{folder}.cog")
+        
+@bot.command(aliases=["-reload"])
+async def __reload(ctx): 
+    
+    for folder in os.listdir("modules"):
+        if os.path.exists(os.path.join("modules", folder, "cog.py")):
+            bot.reload_extension(f"modules.{folder}.cog")
+    else: print("Cogs Recargados")
+    
+    await ctx.send("Se han actualizado los comandos")
 
 bot.run(token)

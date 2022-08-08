@@ -1,8 +1,15 @@
 __pycache__/
+temp/
+venv/
 
 *.code-workspace
-botToken.txt
-venv/
+
+# BINARIES
+*.mp4
+*.3gpp
 files/ss/*.jpg
-files/ytDownloads/*.3gpp
 files/pdf/*.pdf
+
+botToken.txt
+code/test.py
+

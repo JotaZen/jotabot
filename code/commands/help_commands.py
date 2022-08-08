@@ -76,6 +76,7 @@ help_commands = Help(
         ["-db", "Comandos bases de datos", "SQL",[]],
         ["-yt", "Comandos YouTube", "YT",[]],
         ["-ss", "Comandos Screenshot", "YT",[]],
+        ["-pend", "Cosas por hacer", "YT",[]],
 
         ["-clear", "borra la cantidad de mensajes indicada(<6)", "MAIN",[]],
         ["venbot", "Bot a voz", "DISCORD",[]],
@@ -150,6 +151,28 @@ screenshot_commands = Help(
         ["scramshot", "Captura pantalla del servidor", "SS",[]],
         ["scramshow", "Capturas guardadas", "SS",[]],
         ["scram", "Muestra captura (indice de scramshow)", "SS",[]],       
+    ]
+)
+
+to_doList = Help(
+
+    #--- NAME ---#
+    "Pendiente",   
+    #--- COMMAND ---#
+    "-pend",    
+    #--- ALIASES ---#                                
+    [],      
+    #--- TITLE ---#
+    "**POR HACER**",
+    #--- DESCRIPTION ---#
+    "Comandos pendientes",
+
+    #--- ["COMMAND", "DESCRIPTION", "TYPE", ["ALIASES"]] ---#
+    [
+        ["Conversor moneda", "https://api.gael.cloud/general/public/monedas", "",[]],
+        ["Ver Clima", "https://www.meteored.cl/api/#/panel/ayuda", "",[]],
+
+    
     ]
 )
 
