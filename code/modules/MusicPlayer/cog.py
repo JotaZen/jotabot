@@ -58,7 +58,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
             song = f"{self.dir}/{self.song_queue[0]}.mp4"
             
             link = yt.search(self.song_queue[0])            
-            voice.play(nextcord.FFmpegPCMAudio(source=song),after=lambda error: self.nextSong(ctx, link))
+            voice.play(nextcord.FFmpegPCMAudio(source=song),after=lambda e: self.nextSong(ctx, link))
             voice.pause()
             await asyncio.sleep(2)
             voice.resume()

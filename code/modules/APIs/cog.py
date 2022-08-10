@@ -13,7 +13,7 @@ class APIs(commands.Cog, name="APIs Requests"):
 
     
     #---------Weather---------# 
-    @commands.command(aliases=[], enabled=False) # Los Angeles Quitada
+    @commands.command(aliases=["!clima"]) # Los Angeles Quitada
     async def __weather(self, ctx, city: str="Los Ángeles"):
         response = requests.get(API.get("Gael Weather API"))
         response = response.json()
@@ -26,14 +26,17 @@ class APIs(commands.Cog, name="APIs Requests"):
         
         embed = nextcord.Embed(
             title=f'***Clima en {weather["Estacion"]}***', 
-            description=f'**{weather["Estado"]}**'
-                        f'Temperatura: {weather["Temp"]}°'
-                        f'Humedad: {weather["Humedad"]}%',
+            description=f'Temperatura: {weather["Temp"]}°\n'
+                        f'Humedad: {weather["Humedad"]}%\n'                    
+                        f'**{weather["Estado"]}**',             
             timestamp=datetime.utcnow(), 
             color=nextcord.Color.purple()
             )
-        embed.set_thumbnail(url=Icon.get("weather_default"))
         
+        embed.set_thumbnail(url=Icon.get("weather_default"))
+        if weather["Estado"] == "Despejado":
+            embed.set_thumbnail(url=Icon.get("weather_clear"))
+              
         await ctx.send(embed=embed)      
 
 
@@ -55,7 +58,7 @@ class APIs(commands.Cog, name="APIs Requests"):
         elif clp.isnumeric():  
             clp = int(clp)
             
-            if usd == "usd":
+            if usd.lower() == "usd":
                 dolar_to_clp = int(clp * conv)
                 clp = '{:_}'.format(clp).replace("_",".")
                 dolar_to_clp = '{:_}'.format(dolar_to_clp).replace("_",".")
