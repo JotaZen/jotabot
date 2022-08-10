@@ -7,12 +7,14 @@ class Responses:
     
     def commands(self):
         commands = []
-        for key in self.commands_responses: commands.append(key)
+        for key in self.commands_responses:
+            commands.append(key)
         else: return commands
 
 Memes = Responses(
     {
     "uwu":"uwu",
+    "xd":"xd",
     "xdd":"(๑╹ᆺ╹)",
     "hola":"uwu",
     "awa":"awita",

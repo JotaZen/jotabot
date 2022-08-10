@@ -1,15 +1,13 @@
 
-from commands.config import yTube_settings as YT
 from pytube import YouTube
 from urllib import parse, request
 import re
 import os
 
-import youtube_dl
 
-downloads_dir = YT.settings["directory"]
+downloads_dir = "../files/ytDownloads"
 
-lambda source: YouTube(source)
+source = lambda source: YouTube(source)
 
 def search(search, console = False, index = 0):
     query_string = parse.urlencode({"search_query": search})
@@ -30,7 +28,9 @@ def download(source, quality="high", dir = downloads_dir):
         pytube_video.streams.first().download(dir)
         
     elif quality=="high":
-        pytube_video.streams.filter(progressive=True).get_highest_resolution().download(dir)
+        #pytube_video.streams.filter(progressive=True).get_highest_resolution().download(dir)
+        pytube_video.streams.get_audio_only().download(dir)
+        
     
     return source
 
