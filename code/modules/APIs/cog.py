@@ -10,11 +10,11 @@ class APIs(commands.Cog, name="APIs Requests"):
     
     def __init__(self, bot):
         self.bot = bot
-
     
     #---------Weather---------# 
     @commands.command(aliases=["!clima"]) # Los Angeles Quitada
     async def __weather(self, ctx, city: str="Los Ángeles"):
+        """!clima - Clima en Los Ángeles (se cae a cada rato)"""
         response = requests.get(API.get("Gael Weather API"))
         response = response.json()
 
@@ -29,7 +29,7 @@ class APIs(commands.Cog, name="APIs Requests"):
             description=f'Temperatura: {weather["Temp"]}°\n'
                         f'Humedad: {weather["Humedad"]}%\n'                    
                         f'**{weather["Estado"]}**',             
-            timestamp=datetime.utcnow(), 
+            timestamp=datetime.now(), 
             color=nextcord.Color.purple()
             )
         
@@ -43,12 +43,13 @@ class APIs(commands.Cog, name="APIs Requests"):
     #---------Money---------# 
     @commands.command(aliases=["!usd"]) 
     async def __clptousd(self, ctx, clp=None, usd=None,currency="USD"):
+        """!usd - Valor del dólar (se cae a cada rato)"""
         response = requests.get(API.get("Gael Monedas API"))
         response = response.json()
         value = list(filter(lambda x: x["Codigo"] == currency, response)) 
         
-        if len(value) != 1: return
-        
+        if len(value) != 1 or value[0]["Valor"] == "ND": return
+
         conv  = int(float((value[0]["Valor"]).replace(",", ".")))
         
         if not clp or not clp.isnumeric():

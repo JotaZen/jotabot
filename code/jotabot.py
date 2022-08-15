@@ -10,6 +10,7 @@ def jotabot():
     
     intents = discord.Intents.all()
     bot = commands.Bot(command_prefix="", intents=intents)
+ 
     
     @bot.event
     async def on_message(message):
@@ -23,22 +24,27 @@ def jotabot():
     
             
     @bot.command(aliases=["-reload"])
-    async def __reload(ctx):   
+    async def __reload(ctx):
+        """-reload - Recarga al bot"""   
+        bot.reload_extension("modules.Help.cog")
         for folder in os.listdir("modules"):
-            if os.path.exists(os.path.join("modules", folder, "cog.py")):
+            if os.path.exists(os.path.join("modules", folder, "cog.py")) and folder != "Help":
                 bot.reload_extension(f"modules.{folder}.cog")
-        else: 
+        else:        
             print("Cogs Recargados")        
             await ctx.send("Se han actualizado los comandos")
-        
+    
+    bot.load_extension("modules.Help.cog")  
     for folder in os.listdir("modules"):
-        if os.path.exists(os.path.join("modules", folder, "cog.py")):
+        
+        if os.path.exists(os.path.join("modules", folder, "cog.py")) and folder != "Help":
             bot.load_extension(f"modules.{folder}.cog")
+                    
             
     with open("../botToken.txt", "r") as file:
         token = file.read()
         print(f'Token = "{token[0:10]}..."')
-
+    
     @bot.event
     async def on_ready():
         await bot.change_presence(activity=discord.Game(name="Hollow Knight: Silksong"))

@@ -4,6 +4,7 @@ from urllib import parse, request
 import re
 import os
 
+import threading
 
 downloads_dir = "../files/ytDownloads"
 
@@ -19,7 +20,6 @@ def search(search, console = False, index = 0):
         
     return f"https://www.youtube.com/watch\?v={search_results[index]}" 
 
-
     
 def download(source, quality="high", dir = downloads_dir):
     pytube_video = YouTube(source)
@@ -28,10 +28,21 @@ def download(source, quality="high", dir = downloads_dir):
         pytube_video.streams.first().download(dir)
         
     elif quality=="high":
-        #pytube_video.streams.filter(progressive=True).get_highest_resolution().download(dir)
-        pytube_video.streams.get_audio_only().download(dir)
-        
+        pytube_video.streams.get_audio_only().download(dir)       
     
+    return source
+
+def downloadVideo(source, quality="high", dir = downloads_dir):   
+    def downloadThread(source, quality, dir):
+        video = YouTube(source)
+        if quality=="low":
+            video.streams.first().download(dir)
+            
+        elif quality=="high":
+            video.streams.filter(progressive=True).get_highest_resolution().download(dir) 
+    
+    t1 = threading.Thread(target=lambda: downloadThread(source, quality, dir))
+    t1.start()
     return source
 
 

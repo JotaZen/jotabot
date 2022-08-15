@@ -12,7 +12,7 @@ To do List:
     Acceder a una biblioteca pdf
     Enviar pags pdf como jpg
     Abrir server de maincra y cerrarlo a peticion
-    Reproducir musica descargada en chat de voz
+    Reproducir musica descargada en chat de voz - done
     Mencionar y mensajear usuarios
     Meme por hora
     Postear automaticamente en canales definidos

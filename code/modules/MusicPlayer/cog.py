@@ -2,6 +2,7 @@ import nextcord
 from nextcord.ext import commands
 from nextcord.utils import get
 
+from modules.Help.cog import HelpCommands
 import modules.yTube.yTube as yt
 import asyncio
 
@@ -12,12 +13,13 @@ class MusicPlayer(commands.Cog, name="Music Player"):
         self.bot = bot
         self.song_queue = []       
         self.dir = "./modules/MusicPlayer/temp"
+        HelpCommands.AddCommands(self.get_commands())
                            
                        
     @commands.command(aliases=["-p"])
-    async def __play(self, ctx, *, search):      
+    async def __play(self, ctx, *, search):             
+        """-p - Reproduce una canción de YouTube o la pone a la cola"""
         
-        """Checks if User is connected to voice"""
         channel = ctx.message.author.voice.channel
         if not channel:
             await ctx.send("No estas en un canal de voz ~")
@@ -68,6 +70,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
 
     @commands.command(aliases=["-pause", "-play"])
     async def __pause(self, ctx): 
+        """-pause - Pausa"""
         try:    
             voice = get(self.bot.voice_clients, guild = ctx.guild)
             
@@ -81,7 +84,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     
     @commands.command(aliases=["-next","-n"])
     async def __next(self, ctx):    
-
+        """-n - Reproduce la siguiente canción en la cola"""
         if len(self.song_queue) == 0:
             await ctx.send(f"> No hay mas")
             return
@@ -92,6 +95,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
         
     @commands.command(aliases=["-quit"])    
     async def __quit(self, ctx):    
+        """-quit - Borra toda la playlist"""
         try: 
             voice = get(self.bot.voice_clients, guild = ctx.guild)
             voice.stop()
@@ -103,7 +107,8 @@ class MusicPlayer(commands.Cog, name="Music Player"):
 
 
     @commands.command(aliases=["-playlist"])
-    async def __playlist(self, ctx):        
+    async def __playlist(self, ctx):  
+        """-playlist - Muestra la Playlist"""      
         if self.song_queue == []: 
             await ctx.send("> No hay canciones en la playlist")
             return
@@ -116,7 +121,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     
     @commands.command(aliases=["-force"])
     async def __playforce(self, ctx, *, search):      
-        
+        """-force - Fuerza una canción en la cola para que se reproduzca a continuación"""
         if len(self.song_queue) <= 2: return
         """Checks if User is connected to voice"""
         channel = ctx.message.author.voice.channel
@@ -142,6 +147,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     
     @commands.command(aliases=["-testp"])
     async def __testplay(self, ctx, *, search):  
+        """-testp - Pruebas"""
         channel = ctx.message.author.voice.channel
         if not channel:
             await ctx.send("No estas en un canal de voz ~")
@@ -151,9 +157,12 @@ class MusicPlayer(commands.Cog, name="Music Player"):
         if not voice: 
             await channel.connect() 
             voice = get(self.bot.voice_clients, guild = ctx.guild)
-        song = f"{dir}/{search}.mp4"
+            
+        song = f"../files/ytDownloads/{search}"
         voice.play(nextcord.FFmpegPCMAudio(source=song))    
-      
+        voice.pause()
+        await asyncio.sleep(2)
+        voice.resume()
         
 def setup(bot: commands.Bot):
     bot.add_cog(MusicPlayer(bot))
