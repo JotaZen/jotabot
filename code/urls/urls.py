@@ -31,7 +31,13 @@ class URLManager:
             return self.urls[type][name]["url"]
         else: 
             return "Does not exist"
-            
+    
+    
+    def getAllFromType(self, type: str):
+        if type in self.urls:
+            return self.urls[type]
+        else: 
+            return "Does not exist"
             
     def orderFile(self, file: str):
         """Para ordenar un json. Parametros:\n  
