@@ -3,8 +3,7 @@ from nextcord.ext import commands
 
 import requests
 from datetime import datetime
-from urls.icons_url import Icon
-from urls.api_urls import API
+from urls.urls import URL
 
 class APIs(commands.Cog, name="APIs Requests"):
     
@@ -15,14 +14,16 @@ class APIs(commands.Cog, name="APIs Requests"):
     @commands.command(aliases=["!clima"]) # Los Angeles Quitada
     async def __weather(self, ctx, city: str="Los Ángeles"):
         """!clima - Clima en Los Ángeles (se cae a cada rato)"""
-        response = requests.get(API.get("Gael Weather API"))
+        response = requests.get(URL.get("API","Gael Weather API"))
         response = response.json()
 
         weather = list(filter(lambda x: x["Estacion"] == city, response))            
          
         if len(weather) != 0:
             weather = weather[0]       
-        else: return
+        else: 
+            print("!clima no disponible")
+            return
         
         embed = nextcord.Embed(
             title=f'***Clima en {weather["Estacion"]}***', 
@@ -33,18 +34,18 @@ class APIs(commands.Cog, name="APIs Requests"):
             color=nextcord.Color.purple()
             )
         
-        embed.set_thumbnail(url=Icon.get("weather_default"))
+        embed.set_thumbnail(url=URL.get("Icon", "weather_default"))
         if weather["Estado"] == "Despejado":
-            embed.set_thumbnail(url=Icon.get("weather_clear"))
+            embed.set_thumbnail(url=URL.get("Icon", "weather_clear"))
               
         await ctx.send(embed=embed)      
 
 
     #---------Money---------# 
     @commands.command(aliases=["!usd"]) 
-    async def __clptousd(self, ctx, clp=None, usd=None,currency="USD"):
+    async def __clptousd(self, ctx, clp=None, usd="",currency="USD"):
         """!usd - Valor del dólar (se cae a cada rato)"""
-        response = requests.get(API.get("Gael Monedas API"))
+        response = requests.get(URL.get("API", "Gael Monedas API"))
         response = response.json()
         value = list(filter(lambda x: x["Codigo"] == currency, response)) 
         
@@ -82,7 +83,7 @@ class APIs(commands.Cog, name="APIs Requests"):
         timestamp   = datetime.now(), 
         color       = nextcord.Color.green()
         )
-        embed.set_thumbnail(url=Icon.get("dolar"))
+        embed.set_thumbnail(url=URL.get("Icon", "dolar"))
         
         await ctx.send(embed=embed)
         

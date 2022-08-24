@@ -1,0 +1,14 @@
+{
+    "Gael Weather API": {
+        "info": "Weather API",
+        "url": "https://api.gael.cloud/general/public/clima"
+    },
+    "Gael Monedas API": {
+        "info": "Monedas API",
+        "url": "https://api.gael.cloud/general/public/monedas"
+    },
+    "Safebooru": {
+        "info": "Safe images",
+        "url": "https://safebooru.org/index.php?page=dapi&s=post&q=index"
+    }
+}

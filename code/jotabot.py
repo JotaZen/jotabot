@@ -4,21 +4,20 @@ from nextcord.ext import commands
 from datetime import datetime
 import os
 
-from urls.img_urls import Img
+from urls.urls import URL
       
 def jotabot():
     
     intents = discord.Intents.all()
     bot = commands.Bot(command_prefix="", intents=intents)
  
-    
     @bot.event
     async def on_message(message):
         if message.author == bot.user: return 
         elif "silksong" in message.content.split():
             embed = discord.Embed(title="¿Silksong?", description="Todavia no sale Silksong.", 
                 timestamp=datetime.now(), color=discord.Color.red())
-            embed.set_thumbnail(url=Img.get("hornet_miniature"))
+            embed.set_thumbnail(url=URL.get("Img", "hornet_miniature"))
             await message.channel.send(embed=embed)
         await bot.process_commands(message)   
     
@@ -33,6 +32,7 @@ def jotabot():
         else:        
             print("Cogs Recargados")        
             await ctx.send("Se han actualizado los comandos")
+            
     
     bot.load_extension("modules.Help.cog")  
     for folder in os.listdir("modules"):

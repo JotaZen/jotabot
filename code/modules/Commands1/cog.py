@@ -4,7 +4,7 @@ from nextcord.ext import commands
 from nextcord.utils import get
 
 from modules.Help.cog import HelpCommands
-from urls.api_urls import API
+from urls.urls import URL
 import modules.APIs.requests as Request
 
 import modules.Commands1.simple_commands as simple
@@ -107,7 +107,7 @@ class Commands1(commands.Cog, name="General Commands"):
     async def __towa(self, ctx):
         """towa - Towa Safebooru"""       
        
-        source = API.get("Safebooru")        
+        source = URL.get("API", "Safebooru")        
         tags = ["tags=tokoyami_towa"]     
         cant = 10
         links = [ i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
@@ -166,7 +166,7 @@ class Commands1(commands.Cog, name="General Commands"):
     async def __booru(self, ctx, tag):
         """-booru - Safebooru search"""       
         print(f"Searching {tag}")
-        source = API.get("Safebooru")        
+        source = URL.get("API", "Safebooru")        
         tags = [f"tags={tag}"]      
         cant = 15
         links = [i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
@@ -219,7 +219,65 @@ class Commands1(commands.Cog, name="General Commands"):
                 
                 if c != previous:
                     await msg.edit(embed=embeds[c])
-                       
+    
+    
+    @commands.command(aliases=["-booru100"])
+    async def __booru100(self, ctx, tag):
+        """-booru100 - Safebooru search x 100"""       
+        print(f"Searching {tag}")
+        source = URL.get("API", "Safebooru")        
+        tags = [f"tags={tag}"]      
+        cant = 100
+        links = [i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
+        ]
+        embeds = []
+        n = 1
+        for i in links:
+            embed = nextcord.Embed(
+                    title=f"{n}/{len(links)}",
+                    color=nextcord.Color.red())
+            embed.set_image(i)   
+            embeds.append(embed)
+            n += 1
+            
+        self.bot.help_pages = embeds       
+        buttons = [u"\u23EA",u"\u25C0",u"\u25B6",u"\u23E9"]
+        c = 0
+        msg = await ctx.send(embed=embeds[c])
+        
+        for button in buttons:
+            await msg.add_reaction(button)
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", 
+                    check=lambda reaction, user: user != self.bot.user and reaction.message == msg and reaction.emoji in buttons, 
+                    timeout=60.0 * 5                
+                )
+            except asyncio.TimeoutError:
+                embed = self.bot.help_pages[c]
+                embed.set_footer(text="Timed Out.")
+                await msg.clear_reactions()
+            
+            else:
+                previous = c                
+                if reaction.emoji == buttons[0]:  
+                    c = 0
+                elif reaction.emoji == buttons[1]:  
+                    if c>0: 
+                        c -= 1   
+                elif reaction.emoji == buttons[2]:  
+                    if c < len(embeds)-1: 
+                        c += 1 
+                elif reaction.emoji == buttons[3]:  
+                    c = len(embeds)-1 
+                
+                for button in buttons:
+                    await msg.remove_reaction(button, ctx.author)
+                
+                if c != previous:
+                    await msg.edit(embed=embeds[c])                   
    
     
     #---------Voice---------#  
