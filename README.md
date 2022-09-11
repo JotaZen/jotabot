@@ -19,7 +19,7 @@ To do List:
     Configuraciones modificables
     Registrar usuarios para permisos
     Ver repositorios github y anclarlos
-    Consultar apis 
+    Consultar apis -doing good
 
 
 
