@@ -1,20 +1,29 @@
+
 import nextcord
 from nextcord.ext import commands
 
+import asyncio
 import requests
+
+from urllib import request
 from datetime import datetime
 from urls.urls import URL
 
+import modules.APIs.requests as Request
 class APIs(commands.Cog, name="APIs Requests"):
     
     def __init__(self, bot):
         self.bot = bot
-    
+        self.poke_api = URL.get("API","PokeAPI")
+        self.weather_api = URL.get("API","Gael Weather API")
+        self.usd_api = URL.get("API", "Gael Monedas API")
+   
+   
     #---------Weather---------# 
     @commands.command(aliases=["!clima"]) # Los Angeles Quitada
     async def __weather(self, ctx, city: str="Los Ángeles"):
         """!clima - Clima en Los Ángeles (se cae a cada rato)"""
-        response = requests.get(URL.get("API","Gael Weather API"))
+        response = requests.get(self.weather_api)
         response = response.json()
 
         weather = list(filter(lambda x: x["Estacion"] == city, response))            
@@ -45,7 +54,7 @@ class APIs(commands.Cog, name="APIs Requests"):
     @commands.command(aliases=["!usd"]) 
     async def __clptousd(self, ctx, clp=None, usd="",currency="USD"):
         """!usd - Valor del dólar (se cae a cada rato)"""
-        response = requests.get(URL.get("API", "Gael Monedas API"))
+        response = requests.get(self.usd_api)
         response = response.json()
         value = list(filter(lambda x: x["Codigo"] == currency, response)) 
         
@@ -59,7 +68,7 @@ class APIs(commands.Cog, name="APIs Requests"):
         
         elif clp.isnumeric():  
             clp = int(clp)
-            
+                        
             if usd.lower() == "usd":
                 dolar_to_clp = int(clp * conv)
                 clp = '{:_}'.format(clp).replace("_",".")
@@ -87,10 +96,211 @@ class APIs(commands.Cog, name="APIs Requests"):
         
         await ctx.send(embed=embed)
         
-
+    
+    #---------Safebooru---------# 
+    @commands.command(aliases=["towa"])
+    async def __towa(self, ctx):
+        """towa - Towa Safebooru"""       
+       
+        source = URL.get("API", "Safebooru")        
+        tags = ["tags=tokoyami_towa"]     
+        cant = 10
+        links = [ i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
+        ]
+        embeds = []
         
-         
+        for i in links:
+            embed = nextcord.Embed(
+                    color=nextcord.Color.dark_purple())
+            embed.set_image(i)
+            
+            embeds.append(embed)
+            
+        self.bot.help_pages = embeds       
+        buttons = [u"\u23EA",u"\u25C0",u"\u25B6",u"\u23E9"]
+        c = 0
+        msg = await ctx.send(embed=embeds[c])
+        
+        for button in buttons:
+            await msg.add_reaction(button)
 
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", 
+                    check=lambda reaction, user: user != self.bot.user and reaction.message == msg and reaction.emoji in buttons, 
+                    timeout=60.0                
+                )
+            except asyncio.TimeoutError:
+                embed = self.bot.help_pages[c]
+                embed.set_footer(text="Timed Out.")
+                await msg.clear_reactions()
+            
+            else:
+                previous = c                
+                if reaction.emoji == buttons[0]:  
+                    c = 0
+                elif reaction.emoji == buttons[1]:  
+                    if c>0: 
+                        c -= 1   
+                elif reaction.emoji == buttons[2]:  
+                    if c < len(embeds)-1: 
+                        c += 1 
+                elif reaction.emoji == buttons[3]:  
+                    c = len(embeds)-1 
+                
+                for button in buttons:
+                    await msg.remove_reaction(button, ctx.author)
+                
+                if c != previous:
+                    await msg.edit(embed=embeds[c])
+           
+                    
+    
+    @commands.command(aliases=["-booru"])
+    async def __booru(self, ctx, tag):
+        """-booru - Safebooru search"""       
+        print(f"Searching {tag}")
+        source = URL.get("API", "Safebooru")             
+        tags = [f"tags={tag}"]      
+        cant = 15
+        links = [i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
+        ]
+        embeds = []
+        n = 1
+        for i in links:
+            embed = nextcord.Embed(
+                    title=f"{n}/{len(links)}",
+                    color=nextcord.Color.red())
+            embed.set_image(i)   
+            embeds.append(embed)
+            n += 1
+            
+        self.bot.help_pages = embeds       
+        buttons = [u"\u23EA",u"\u25C0",u"\u25B6",u"\u23E9"]
+        c = 0
+        msg = await ctx.send(embed=embeds[c])
+        
+        for button in buttons:
+            await msg.add_reaction(button)
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", 
+                    check=lambda reaction, user: user != self.bot.user and reaction.message == msg and reaction.emoji in buttons, 
+                    timeout=60.0                
+                )
+            except asyncio.TimeoutError:
+                embed = self.bot.help_pages[c]
+                embed.set_footer(text="Timed Out.")
+                await msg.clear_reactions()
+            
+            else:
+                previous = c                
+                if reaction.emoji == buttons[0]:  
+                    c = 0
+                elif reaction.emoji == buttons[1]:  
+                    if c>0: 
+                        c -= 1   
+                elif reaction.emoji == buttons[2]:  
+                    if c < len(embeds)-1: 
+                        c += 1 
+                elif reaction.emoji == buttons[3]:  
+                    c = len(embeds)-1 
+                
+                for button in buttons:
+                    await msg.remove_reaction(button, ctx.author)
+                
+                if c != previous:
+                    await msg.edit(embed=embeds[c])
+    
+    
+    @commands.command(aliases=["-booru100"])
+    async def __booru100(self, ctx, tag):
+        """-booru100 - Safebooru search x 100"""       
+        print(f"Searching {tag}")
+        source = URL.get("API", "Safebooru")        
+        tags = [f"tags={tag}"]      
+        cant = 100
+        links = [i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
+        ]
+        embeds = []
+        n = 1
+        for i in links:
+            embed = nextcord.Embed(
+                    title=f"{n}/{len(links)}",
+                    color=nextcord.Color.red())
+            embed.set_image(i)   
+            embeds.append(embed)
+            n += 1
+            
+        self.bot.help_pages = embeds       
+        buttons = [u"\u23EA",u"\u25C0",u"\u25B6",u"\u23E9"]
+        c = 0
+        msg = await ctx.send(embed=embeds[c])
+        
+        for button in buttons:
+            await msg.add_reaction(button)
+
+        while True:
+            try:
+                reaction, user = await self.bot.wait_for(
+                    "reaction_add", 
+                    check=lambda reaction, user: user != self.bot.user and reaction.message == msg and reaction.emoji in buttons, 
+                    timeout=60.0 * 5                
+                )
+            except asyncio.TimeoutError:
+                embed = self.bot.help_pages[c]
+                embed.set_footer(text="Timed Out.")
+                await msg.clear_reactions()
+            
+            else:
+                previous = c                
+                if reaction.emoji == buttons[0]:  
+                    c = 0
+                elif reaction.emoji == buttons[1]:  
+                    if c>0: 
+                        c -= 1   
+                elif reaction.emoji == buttons[2]:  
+                    if c < len(embeds)-1: 
+                        c += 1 
+                elif reaction.emoji == buttons[3]:  
+                    c = len(embeds)-1 
+                
+                for button in buttons:
+                    await msg.remove_reaction(button, ctx.author)
+                
+                if c != previous:
+                    await msg.edit(embed=embeds[c])                   
+   
+
+    
+    #---------Pokeapi---------#  
+    @commands.command(aliases=["-pokerandom"])
+    async def __pokemon(self, ctx):
+        """Random Pokemon from PokeAPI"""
+ 
+        pkmn = Request.pokeRandom(self.poke_api)
+        print(pkmn["types"])
+        types = [i["type"]["name"].capitalize() for i in pkmn["types"]]
+        
+        pokemon = nextcord.Embed(
+            title=pkmn["name"].capitalize(),      
+            description="["+"][".join(types)+"]",
+            color=nextcord.Color.yellow()
+        ) 
+        pokemon.set_thumbnail(f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pkmn['id']}.png")
+        await ctx.send(embed=pokemon)     
+
+    
+    #---------Horoscopo---------#  
+    @commands.command(aliases=["-horoscopo"])
+    async def __horoscopo(self, ctx, signo, *, void):
+        """Horoscopo diario"""
+        
+        
+    
 
 def setup(bot: commands.Bot):
     bot.add_cog(APIs(bot))
