@@ -1,34 +1,50 @@
+from datetime import datetime
+
+
 #---------Functions---------#
 
-def splitWord(string, splitter=" ", first=False):
-    string = string.split(splitter)
-    t = string.pop(0)
-    if first: return t     
-    return " ".join(string)
-
-
-def fileNameChars(filename: str, OS="Windows", add: str="") -> str: 
+def fileNameChars(filename: str, OS="Windows", add: str=",.\'") -> str: 
     """
-    Removes characters prohibited in Windows(default)/Linux file names 
+    Removes prohibited characters in Windows(default)/Linux file names 
     
-    -Use "add" argument to append characters that you don't want in your file name
+    -Use "add": str argument to append characters that you don't want in your file name
+    
+    Windows restricted = <>:"/\|?*,.' 
     
     """
-    restricted = str   
+    restricted = ""   
     
     if OS == "Windows":
-        restricted = '<>:"/\\|?*,.\''
-    
+        restricted += '<>:"/\\|?*'
     elif OS == "Linux":
-        restricted = '\\'
-        
+        restricted += '\\'     
     else: raise 'Not An OS'
-     
+      
     for i in (restricted + add):
         filename = filename.replace(i,"")   
+    
     return filename
 
 
+#---------Decorators---------#
+def executionTime(func):
+    def wrapper():
+        initial_time = datetime.now()
+        func()
+        final_time = datetime.now()
+        time_elapsed = final_time - initial_time
+        print(f"Finshed in {time_elapsed.total_seconds()} seconds.")
+    return wrapper
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
 if __name__ == "__main__":
