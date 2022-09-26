@@ -5,29 +5,35 @@ from nextcord.utils import get
 
 import random
 import asyncio
-import datetime as dt
 from datetime import datetime
 
 from modules.Help.cog import HelpCommands
-from urls.urls import URL
-
-import modules.APIs.requests as Request
-import modules.Commands1.simple_commands as simple
+from modules.Commands1.simple_commands import SimpleResponse as sr
 import modules.Commands1.scrapper_horosc as horoscope
 
 class Commands1(commands.Cog, name="General Commands"):
     
-    def __init__(self, bot):
+    def __init__(self, bot, URLS, **kwargs):
         self.bot = bot
-        self.API = URL.getAllFromType("API")
-        self.Img = URL.getAllFromType("Icon")
-        self.Icon = URL.getAllFromType("Img")
+        self.API = URLS.getAllFromType("API")
+        self.Img = URLS.getAllFromType("Icon")
+        self.Icon = URLS.getAllFromType("Img")
         HelpCommands.AddCommands(self.get_commands())
 
-    #---------Text---------# 
-    @commands.command(aliases=simple.Memes.commands())
+    def simpleResponses(self):
+        return self.sr.getCommands()    
+
+    @commands.command(aliases=sr.getCommands())
     async def __plainTextResponse(self, ctx):
-        await ctx.send(simple.plainText(ctx.message.content))
+        await ctx.send(sr.response(ctx.message.content))
+    
+    @commands.command(aliases=['!!!!test'])
+    async def __addsimplecommand(self, ctx, command, response):
+        for i in HelpCommands.allCommands:
+            if command in i.aliases or command == i.name:
+                await ctx.send(f'Error')
+        sr.addResponse(command, response)
+        await ctx.send(f'Se agregó "{command}", con la respuesta "{response}"')
              
 
     @commands.command(aliases=["mona"])
@@ -148,5 +154,5 @@ class Commands1(commands.Cog, name="General Commands"):
         
         await ctx.send(embed=embed)
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Commands1(bot))
+def setup(bot, **kwargs):
+    bot.add_cog(Commands1(bot, **kwargs))

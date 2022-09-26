@@ -4,12 +4,12 @@ import json
 """
 A Class made to access saved urls in json files
 To do:
+change the self.urls so every time get method is called, it opens the json file and returns the url
 
 """
-MAIN_DIRECTORY = "./urls"
 class URLManager:  
     
-    def __init__(self,directory: str=MAIN_DIRECTORY, *args, **kwargs):
+    def __init__(self,directory, *args, **kwargs):
         """
         URLs -> directory='urls.json folder from python script'
         
@@ -131,9 +131,7 @@ class URLManager:
 
 
 def run(): 
-
     url = URLManager(directory=".")
-
     url.add("papa", "papa.cl", a="axd" )
     print(url.types())
     print(url.getAny("weather_clear"))
@@ -141,7 +139,3 @@ def run():
     
 if __name__ == "__main__":
     run()
-
- 
-else :
-    URL = URLManager()

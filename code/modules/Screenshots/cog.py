@@ -8,8 +8,9 @@ import nextcord as discord
 
 class Screenshot(commands.Cog, name="Screenshots"):
     
-    def __init__(self, bot):
+    def __init__(self, bot, CONFIGS, **kwargs):
         self.bot = bot
+        self.directory = CONFIGS.get(self.__cog_name__, 'directory')
         HelpCommands.AddCommands(self.get_commands())
         
     @commands.command(aliases=["-ss"])
@@ -25,5 +26,5 @@ class Screenshot(commands.Cog, name="Screenshots"):
         """-show - Lista de screenshots"""       
         await ctx.send(ss.screenshotList())
 
-def setup(bot: commands.Bot):
-    bot.add_cog(Screenshot(bot))
+def setup(bot, **kwargs):
+    bot.add_cog(Screenshot(bot, **kwargs))

@@ -9,7 +9,7 @@ DATA = [1.4,4.4,9,8,7,10,21,12,35,32.1,17,6,10,22,25,
         5,9.4,8,7,10,11,12.2,35,32,17,6,10,22,25,
     ]
 
-DECIMALES = 2
+DECIMALES = 0
 DATA = list(map(lambda x: round(x,DECIMALES) ,DATA))
 
 # 1

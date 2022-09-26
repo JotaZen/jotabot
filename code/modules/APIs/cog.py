@@ -1,22 +1,20 @@
-
 import nextcord
 from nextcord.ext import commands
 
 import asyncio
 import requests
 
-from urllib import request
 from datetime import datetime
-from urls.urls import URL
 
 import modules.APIs.requests as Request
 class APIs(commands.Cog, name="APIs Requests"):
     
-    def __init__(self, bot):
+    def __init__(self, bot, CONFIGS, URLS,**kwargs):
         self.bot = bot
-        self.poke_api = URL.get("API","PokeAPI")
-        self.weather_api = URL.get("API","Gael Weather API")
-        self.usd_api = URL.get("API", "Gael Monedas API")
+        self.URLS = URLS
+        self.poke_api = URLS.get("API","PokeAPI")
+        self.weather_api = URLS.get("API","Gael Weather API")
+        self.usd_api = URLS.get("API", "Gael Monedas API")
    
    
     #---------Weather---------# 
@@ -25,7 +23,6 @@ class APIs(commands.Cog, name="APIs Requests"):
         """!clima - Clima en Los Ángeles (se cae a cada rato)"""
         response = requests.get(self.weather_api)
         response = response.json()
-
         weather = list(filter(lambda x: x["Estacion"] == city, response))            
          
         if len(weather) != 0:
@@ -43,12 +40,11 @@ class APIs(commands.Cog, name="APIs Requests"):
             color=nextcord.Color.purple()
             )
         
-        embed.set_thumbnail(url=URL.get("Icon", "weather_default"))
+        embed.set_thumbnail(url=self.URL.get("Icon", "weather_default"))
         if weather["Estado"] == "Despejado":
-            embed.set_thumbnail(url=URL.get("Icon", "weather_clear"))
+            embed.set_thumbnail(url=self.URL.get("Icon", "weather_clear"))
               
         await ctx.send(embed=embed)      
-
 
     #---------Money---------# 
     @commands.command(aliases=["!usd"]) 
@@ -92,17 +88,16 @@ class APIs(commands.Cog, name="APIs Requests"):
         timestamp   = datetime.now(), 
         color       = nextcord.Color.green()
         )
-        embed.set_thumbnail(url=URL.get("Icon", "dolar"))
+        embed.set_thumbnail(url=self.URL.get("Icon", "dolar"))
         
-        await ctx.send(embed=embed)
-        
+        await ctx.send(embed=embed)     
     
     #---------Safebooru---------# 
     @commands.command(aliases=["towa"])
     async def __towa(self, ctx):
         """towa - Towa Safebooru"""       
        
-        source = URL.get("API", "Safebooru")        
+        source = self.URL.get("API", "Safebooru")        
         tags = ["tags=tokoyami_towa"]     
         cant = 10
         links = [ i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
@@ -112,8 +107,7 @@ class APIs(commands.Cog, name="APIs Requests"):
         for i in links:
             embed = nextcord.Embed(
                     color=nextcord.Color.dark_purple())
-            embed.set_image(i)
-            
+            embed.set_image(i)        
             embeds.append(embed)
             
         self.bot.help_pages = embeds       
@@ -153,15 +147,13 @@ class APIs(commands.Cog, name="APIs Requests"):
                     await msg.remove_reaction(button, ctx.author)
                 
                 if c != previous:
-                    await msg.edit(embed=embeds[c])
-           
-                    
+                    await msg.edit(embed=embeds[c])            
     
     @commands.command(aliases=["-booru"])
     async def __booru(self, ctx, tag):
         """-booru - Safebooru search"""       
         print(f"Searching {tag}")
-        source = URL.get("API", "Safebooru")             
+        source = self.URL.get("API", "Safebooru")             
         tags = [f"tags={tag}"]      
         cant = 15
         links = [i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
@@ -214,13 +206,12 @@ class APIs(commands.Cog, name="APIs Requests"):
                 
                 if c != previous:
                     await msg.edit(embed=embeds[c])
-    
-    
+      
     @commands.command(aliases=["-booru100"])
     async def __booru100(self, ctx, tag):
         """-booru100 - Safebooru search x 100"""       
         print(f"Searching {tag}")
-        source = URL.get("API", "Safebooru")        
+        source = self.URL.get("API", "Safebooru")        
         tags = [f"tags={tag}"]      
         cant = 100
         links = [i for i in Request.booruImgs(source, tags=tags, limit=cant)                                          
@@ -273,9 +264,7 @@ class APIs(commands.Cog, name="APIs Requests"):
                 
                 if c != previous:
                     await msg.edit(embed=embeds[c])                   
-   
-
-    
+      
     #---------Pokeapi---------#  
     @commands.command(aliases=["-pokerandom"])
     async def __pokemon(self, ctx):
@@ -291,16 +280,7 @@ class APIs(commands.Cog, name="APIs Requests"):
             color=nextcord.Color.yellow()
         ) 
         pokemon.set_thumbnail(f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{pkmn['id']}.png")
-        await ctx.send(embed=pokemon)     
+        await ctx.send(embed=pokemon)           
 
-    
-    #---------Horoscopo---------#  
-    @commands.command(aliases=["-horoscopo"])
-    async def __horoscopo(self, ctx, signo, *, void):
-        """Horoscopo diario"""
-        
-        
-    
-
-def setup(bot: commands.Bot):
-    bot.add_cog(APIs(bot))
+def setup(bot, **kwargs):
+    bot.add_cog(APIs(bot, **kwargs))

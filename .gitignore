@@ -5,6 +5,9 @@ templates/
 
 *.code-workspace
 
+test.*
+botToken.txt
+
 # BINARIES
 *.mp4
 *.mp3
@@ -12,8 +15,5 @@ templates/
 files/ss/*.jpg
 files/pdf/*.pdf
 
-
-botToken.txt
-
-test.*
-
+# intellij configs
+.idea/

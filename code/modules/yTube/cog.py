@@ -1,13 +1,13 @@
 from nextcord.ext import commands
 import modules.yTube.yTube as yt
 from modules.Help.cog import HelpCommands
-
-import asyncio
-class yTube(commands.Cog, name="yTube"):
+class yTube(commands.Cog, name="YouTube"):
     """YouTube Commands"""
     
-    def __init__(self, bot):
-        self.bot = bot
+    def __init__(self, bot, CONFIGS, **kwargs):
+        self.bot = bot  
+        self.downloads_dir = CONFIGS.get(self.__cog_name__, 'downloads_path')
+        self.audio_size_limit_mb = CONFIGS.get(self.__cog_name__, 'audio_size_limit_mb')
         HelpCommands.AddCommands(self.get_commands())
     
     @commands.command(aliases=["yt"])
@@ -18,14 +18,15 @@ class yTube(commands.Cog, name="yTube"):
     @commands.command(aliases=["ytlist"])
     async def __ytlist(self, ctx):  
         """ytlist - Lista de videos descargados"""  
-        await ctx.send(yt.downloadedList())
+        await ctx.send(yt.downloadedList(self.downloads_dir))
     
     @commands.command(aliases=["ytdwl"])
     async def __ytdwl(self, ctx, *, source):   
         """ytdwl - Descarga un video de YouTube"""
-        v = yt.downloadVideo(yt.search(source))
-        await ctx.send(f"Se descargó: {v}") 
+        video = yt.search(source)[0]
+        yt.downloadVideo(video, self.downloads_dir)
+        await ctx.send(f"Se descargó: {video}") 
                 
 
-def setup(bot: commands.Bot):
-    bot.add_cog(yTube(bot))
+def setup(bot, **kwargs):
+    bot.add_cog(yTube(bot, **kwargs))

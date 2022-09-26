@@ -1,22 +1,24 @@
 from datetime import datetime
-
+from pathlib import Path
 
 #---------Functions---------#
 
-def fileNameChars(filename: str, OS="Windows", add: str=",.\'") -> str: 
+getParent = lambda x: Path(x).absolute().parent
+
+def fileNameChars(filename: str, OS="W", add: str=",.\'") -> str: 
     """
     Removes prohibited characters in Windows(default)/Linux file names 
     
     -Use "add": str argument to append characters that you don't want in your file name
-    
+    -OS=['W','L']
     Windows restricted = <>:"/\|?*,.' 
     
     """
     restricted = ""   
     
-    if OS == "Windows":
+    if OS == "W":
         restricted += '<>:"/\\|?*'
-    elif OS == "Linux":
+    elif OS == "L":
         restricted += '\\'     
     else: raise 'Not An OS'
       
@@ -37,8 +39,8 @@ def executionTime(func):
     return wrapper
     
     
-    
-    
+
+      
     
     
     

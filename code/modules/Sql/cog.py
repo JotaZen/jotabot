@@ -8,5 +8,5 @@ class SQL(commands.Cog, name="SQL"):
         self.bot = bot
         HelpCommands.AddCommands(self.get_commands())
 
-def setup(bot: commands.Bot):
+def setup(bot, **kwargs):
     bot.add_cog(SQL(bot))

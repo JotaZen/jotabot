@@ -17,5 +17,5 @@ class HelpCog(commands.Cog, name="Help Commands"):
     async def __help(self, ctx):
         await ctx.send("> " + "\n> ".join([" ,".join(i.aliases) for i in HelpCommands.allCommands]))
     
-def setup(bot: commands.Bot):
-    bot.add_cog(HelpCog(bot))
+def setup(bot, **kwargs):
+    bot.add_cog(HelpCog(bot, **kwargs))
