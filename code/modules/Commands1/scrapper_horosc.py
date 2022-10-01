@@ -7,8 +7,16 @@ HOME_URL = 'https://www.clarin.com/horoscopo/'
 XPATH_SYMBOL = '//div[@class="row OpeningPostNormal"]//h2/span/text()'
 XPATH_HOROSCOPE = '//div[@class="description"]/node()//text()'
 
-def symbol(symbol):
-    
+def symbol(symbol:str) -> str:
+    """
+    Recieves a string as input and return the zodiac symbol's name if it exist, for web scrap
+
+    Args:
+        symbol (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     symbols_page = ['Aries','Tauro','Géminis','Cáncer','Leo','Virgo','Libra','Escorpio','Sagitario','Capricornio','Acuario','Piscis'] 
 
     if symbol in symbols_page:
@@ -34,13 +42,11 @@ def parseHome(horoscope_symbol):
             data = {
                 'day': dt.date.today().strftime('%d-%m-%Y'), 
                 'horoscope':horoscope
-                    }
-           
+                    }     
             return data    
 
         else:
-            raise ValueError(f'Error: {response.status_code}')
-        
+            raise ValueError(f'Error: {response.status_code}')      
     except ValueError as ve:
         print(ve)
 

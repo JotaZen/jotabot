@@ -7,22 +7,19 @@ import os
 from urls.urls import URLManager
 from utilities.configs import JotabotConfig
 
-
 def jotabot():
-
-    intents = discord.Intents.all()
-    bot = commands.Bot(command_prefix="", intents=intents)
-    CONFIGS = JotabotConfig('config.ini', './utilities/saves/default_configs.ini')
-    URLS = URLManager('./urls')
+    CONFIGS = JotabotConfig(config_file='config.ini', default_configs='./utilities/saves/default_configs.ini')
+    URLS = URLManager(CONFIGS.get('URLS', 'directory'))
     extra_kwargs = {
         'CONFIGS':CONFIGS,
         'URLS':URLS
     }
+    bot = commands.Bot(command_prefix=CONFIGS.get('Jotabot', 'command_prefix'), intents=discord.Intents.all())
     Cogs = []
  
-    with open("../botToken.txt", "r") as file:
-        token = file.read()
-        print(f'Token = "{token[0:10]}..."')  
+    with open(CONFIGS.get('Jotabot', 'TOKEN'), "r") as f:
+        TOKEN = f.read()
+        print(f'TOKEN = "{TOKEN[0:10]}..."')  
          
     @bot.event
     async def on_message(message):
@@ -30,13 +27,13 @@ def jotabot():
         elif "silksong" in message.content.split():
             embed = discord.Embed(title="¿Silksong?", description="Todavia no sale Silksong.",
                 timestamp=datetime.now(), color=discord.Color.red())
-            embed.set_thumbnail(url=URL.get("Img", "hornet_miniature"))
+            embed.set_thumbnail(url=URLS.get("Img", "hornet_miniature"))
             await message.channel.send(embed=embed)
         await bot.process_commands(message)
         
     @bot.event
     async def on_ready():
-        await bot.change_presence(activity=discord.Game(name="Among Us"))
+        await bot.change_presence(activity=discord.Game(name=CONFIGS.get('Jotabot', 'activity')))
         print(f'Módulos Cargados: ', end='')
         for i in Cogs[0:-1]:
             print(f'{i}, ', end='')
@@ -72,26 +69,9 @@ def jotabot():
             except:
                  print(f'[ERROR] Cog "{folder}" not Loaded')                  
     
-    bot.run(token)
-
-
-
-def extensionsLoad(bot: commands.Bot, folder: str, loaded_extensions: list, CONFIGS: dict):
-    if not (os.path.exists(os.path.join("modules", folder, "cog.py")) and folder != "Help"):
-        return
-    file = f"modules.{folder}.cog"
-    
-    if folder in loaded_extensions:
-        bot.unload_extension(file)
-        loaded_extensions.remove(folder)         
-    try:                     
-        bot.load_extension(file, extras={'CONFIGS':CONFIGS})
-        loaded_extensions.append(folder)
-    except:
-        print(f'[ERROR] Cog "{folder}" not Loaded')   
-    
+    bot.run(TOKEN)   
         
 if __name__ == "__main__":
-    print("Running Jotabot ...")
+    print("\nRunning Jotabot ...")
     jotabot()
 

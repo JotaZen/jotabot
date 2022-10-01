@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from pathlib import Path
 
@@ -26,7 +27,15 @@ def fileNameChars(filename: str, OS="W", add: str=",.\'") -> str:
         filename = filename.replace(i,"")   
     
     return filename
-
+          
+def orderJson(file: str):
+    """Para ordenar un json. Parametros:\n  
+    file = archivo.json"""
+    
+    with open(file,"r") as f:
+        data = json.load(f)
+    with open(file,"w") as f:    
+        json.dump(data, f, indent=4)
 
 #---------Decorators---------#
 def executionTime(func):
@@ -38,7 +47,8 @@ def executionTime(func):
         print(f"Finshed in {time_elapsed.total_seconds()} seconds.")
     return wrapper
     
-    
+
+ 
 
       
     

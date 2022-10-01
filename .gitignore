@@ -8,6 +8,9 @@ templates/
 test.*
 botToken.txt
 
+#Priv Configs
+code/config.ini
+
 # BINARIES
 *.mp4
 *.mp3
