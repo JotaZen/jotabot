@@ -10,7 +10,17 @@ class Math(commands.Cog, name="Math"):
     def __init__(self, bot):
         self.bot = bot
         HelpCommands.AddCommands(self.get_commands())
+    
+    @commands.command(aliases=["-mathspace"])
+    async def __create_channel_math(self, ctx):
         
+        #await ctx.guild.create_category_channel('bot-space')
+        # channel_name = 'math-space'
+        # if not channel_name in list(map(lambda x: x.name ,ctx.guild.channels)):
+        #     await ctx.guild.create_text_channel(channel_name, category='bot-space')
+        #     await ctx.send('> Se creó -math-space-')
+        print(ctx.guild.channels[4].category)
+
 
     @commands.command(aliases=["-data"])
     async def __data(self, ctx, *, DATA):
