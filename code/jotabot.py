@@ -62,9 +62,10 @@ def jotabot():
 
     bot.load_extension("modules.Help.cog")
     for folder in os.listdir("modules"):
-        if os.path.exists(os.path.join("modules", folder, "cog.py")) and folder != "Help":  
+        if os.path.exists(os.path.join("modules", folder, "cog.py")) and folder != "Help": 
+            bot.load_extension(f"modules.{folder}.cog", extras=extra_kwargs)
             try:
-                bot.load_extension(f"modules.{folder}.cog", extras=extra_kwargs)
+                
                 Cogs.append(folder)
             except:
                  print(f'[ERROR] Cog "{folder}" not Loaded')                  

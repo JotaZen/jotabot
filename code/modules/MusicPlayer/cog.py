@@ -13,9 +13,9 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     
     def __init__(self, bot, CONFIGS, **kwargs):
         self._bot            = bot
-        self._song_queue     = {i : [] for i in bot.guilds}   # {'guild': [{'url':str, 'path':'./'},]}
+        self._song_queue     = {i.id : [] for i in bot.guilds}  # {'guild': [{'url':str, 'path':'./'},]}
+        self.playlist        = CONFIGS.get(self.__cog_name__, 'playlist_path')
         self._past_songs     = {}
-        self.estatus         = 'Active' 
         self.dir             = CONFIGS.get(self.__cog_name__, 'downloads_path')
         self.permissions     = None #Dict with clients and permisses / whitelist
         self.inactive_time   = None #timeout
@@ -25,27 +25,101 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     def bot(self):
         return self._bot
        
-    @property
-    def song_queue(self):
-        return self._song_queue
     
     @property
     def past_songs(self):
         return self._past_songs
     
+    #################################################
+    #                  PLAYLIST                     #                                       
+    #                                               #
+    #################################################
+    def jsonRead(self): 
+        with open(self.playlist, 'r') as f:
+            return json.load(f)       
+        
+
+            
+    def getPlaylist(self, guild: str, guild_only=False) -> dict: 
+        playlist = self.jsonRead()
+        if not guild in playlist:
+            playlist.update(
+                {  
+                    guild : {
+                        "current": {},
+                        "queue" : [],
+                        "previous" : []
+                    }
+                }
+            )
+            with open(self.playlist, 'w') as f:
+                json.dump(playlist, f, indent=4)               
+        if guild_only:
+            return playlist[guild]
+        
+        return playlist
+
+    def getCurrentSong(self, guild): 
+        playlist = self.getPlaylist(guild, guild_only=True)
+        print(playlist['current'])
+        return playlist['current']
+    
+    def setCurrentSong(self, guild):
+        playlist = self.getPlaylist(guild)
+        playlist[guild]['current'] = playlist[guild]['queue'].pop(0)
+        with open(self.playlist, 'w') as f:
+            json.dump(playlist, f, indent=4)
+        return playlist[guild]['current']
+    
+    def getQueue(self, guild): 
+        playlist = self.getPlaylist(guild, guild_only=True)
+        return playlist['queue']
+    
+    def queueLength(self, guild):
+        return len(self.getQueue(guild))
+        
+    def addSongToQueue(self, guild, url, path, title=None):
+        playlist = self.getPlaylist(guild)
+        playlist[guild]['queue'].append(
+            {
+                'title' : title,
+                'url'   : url,
+                'path'  : path              
+            }
+        )
+        with open(self.playlist, 'w') as f:
+            json.dump(playlist, f, indent=4) 
+               
+    def addSongToPrevious(self, guild, url, path, title=None):
+        playlist = self.getPlaylist(guild)
+        playlist[guild]['previous'].append(
+            {
+                'title' : title,
+                'url'   : url,
+                'path'  : path              
+            }
+        )
+        with open(self.playlist, 'w') as f:
+            json.dump(playlist, f, indent=4) 
+               
     def clearQueue(self, guild):
         if guild in self.song_queue:
             self._song_queue[guild] = []
+    
+    def clearPlaylist(self, guild: str):
+        playlist = self.jsonRead()
+        playlist.pop(guild, 0)
+        with open(self.playlist, 'w') as f:
+            json.dump(f, playlist, indent=4)  
             
-    def addSongToQueue(self, guild, url, path, title=None):
-        if guild in self.song_queue:      
-            self._song_queue[guild].append(
-                {
-                    'title' : title,
-                    'url'   : url,
-                    'path'  : path              
-                }
-            )
+    def clearPlaylistKey(self, guild, key):
+        playlist = self.jsonRead()
+        if not key in playlist[guild].keys:
+            return
+        playlist[guild][key] = []
+        with open(self.playlist, 'w') as f:
+            json.dump(f, playlist, indent=4)
+            
             
     def addSongToPast(self, guild, song): #Not working
         if guild in self.song_queue:      
@@ -55,12 +129,13 @@ class MusicPlayer(commands.Cog, name="Music Player"):
         if guild in self.song_queue:
             
             for i in self._song_queue[guild]:
-                if url == i['url'] or path == i['path'] or title == i['title']:
-                    
+                if url == i['url'] or path == i['path'] or title == i['title']:         
                     self._song_queue[guild].remove(i)
-
-    async def voiceConnect(self, ctx): pass
-        
+                    
+    #################################################
+    #                  PLAYLIST                     #                                       
+    #                                               #
+    #################################################   
                        
     @commands.command(aliases=["-p"])
     async def __play(self, ctx, *, search):             
@@ -77,7 +152,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
             await channel.connect() 
             voice = get(self.bot.voice_clients, guild = ctx.guild)           
                 
-        
+        guild = str(ctx.guild.id)
         yt_links = yt.search(search, cant=2)
              
         #expresion regular para poner opcion1-N
@@ -87,48 +162,45 @@ class MusicPlayer(commands.Cog, name="Music Player"):
             song_yt_link = yt_links[0]
         
         song_path = yt.downloadAudioYT(source=song_yt_link, dir=self.dir)
-        video_title = yt.source(song_yt_link).title 
-       
-        if voice.is_playing() and self.song_queue[ctx.guild] == []:
-            voice.stop()    
+        video_title = yt.source(song_yt_link).title    
+        print(song_path)
             
-        self.addSongToQueue(ctx.guild, song_yt_link, song_path, video_title)       
+        self.addSongToQueue(guild, song_yt_link, song_path, video_title)       
+        current_song = self.getCurrentSong(guild)
         
-        if voice.is_playing() and len(self.song_queue[ctx.guild]) > 1:
+        if current_song == {}:
+            current_song = self.setCurrentSong(guild)
+            
+        else:
             await ctx.send(f'> Song queued -> {video_title}') 
             return
         
-        if not voice.is_playing():
-            current_song = self.song_queue[ctx.guild][0]['path']
-            
-            music_thread = threading.Thread(target= lambda:    
-                voice.play(
-                    nextcord.FFmpegPCMAudio(source=current_song),
-                    after=lambda e: self.nextSong(ctx, song_yt_link, voice)
-                    )
-                )    
-            music_thread.run()
-            
-            print(f"Playing {self.song_queue[ctx.guild][0]['title']}")
-            voice.pause()
-            await asyncio.sleep(2)
-            voice.resume()
-            
-            await ctx.send(f"> Playing: {self.song_queue[ctx.guild][0]['url']}")
-
-
+        music_thread = threading.Thread(target= lambda:    
+            voice.play(
+                nextcord.FFmpegPCMAudio(source=current_song['path']),
+                after=lambda e: self.nextSong(ctx, song_yt_link, voice, guild)
+                )
+            )    
+        music_thread.run()
         
-    async def nextSong(self, ctx, link, voice):
-        if len(self.song_queue[ctx.guild]) > 1:
-            past_song = self.song_queue[ctx.guild].pop(0)    
+        print(f"Playing {self.getCurrentSong(guild)['title']}")
+        voice.pause()
+        await asyncio.sleep(2)
+        voice.resume()
+        
+        await ctx.send(f"> Playing: {self.getCurrentSong(guild)['url']}")
+        
+    async def nextSong(self, ctx, link, voice, guild):
+        if self.queueLength() > 0:
             
-            current_song = self.song_queue[ctx.guild][0]['path']     
-            link = self.song_queue[ctx.guild][0]['url']    
+            song = self.setCurrentSong(guild)
+            current_song = song['path']
+            link = song['url']    
              
             music_thread = threading.Thread(target= lambda:    
                 voice.play(
                     nextcord.FFmpegPCMAudio(source=current_song),
-                    after=lambda e: self.nextSong(ctx, link, voice)
+                    after=lambda e: self.nextSong(ctx, link, voice, guild)
                     ) 
                 )
             music_thread.run()
@@ -157,7 +229,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     @commands.command(aliases=["-next","-n"])
     async def __next(self, ctx):    
         """-n - Reproduce la siguiente canción en la cola"""
-        if len(self.song_queue[ctx.guild]) <= 1:
+        if len(self.song_queue[ctx.guild.id]) <= 1:
             await ctx.send(f"> No hay mas")
             return
         
@@ -182,12 +254,12 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     async def __playlist(self, ctx):  
         """-playlist - Muestra la Playlist"""        
         
-        if self.song_queue[ctx.guild] == []: 
+        if self.song_queue[ctx.guild.id] == []: 
             await ctx.send("> No hay canciones en la playlist")
             return
         
         temp = []
-        for song in self.song_queue[ctx.guild]:
+        for song in self.song_queue[ctx.guild.id]:
             temp.append(song['title'])
         await ctx.send("> Playlist:\n> Actual: " + "\n> ".join(temp))
   

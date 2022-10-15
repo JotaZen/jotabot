@@ -7,7 +7,6 @@ import threading
 
 
 # MUST CHANGE TO A CONFIG FILE 
-YT_DOWNLOADS_DIR = '../files/ytDownloads'
 YOUTUBE_URL = 'https://www.youtube.com'
 RICKROLL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
 ERROR_LOG_REQUEST = 'Pytube Error -> Request  in yTube.py'
@@ -57,6 +56,7 @@ def search(search: str,console: bool=False,log: bool=True,cant: int=1) -> str:
         
     return links
 
+
 def downloadAudioYT(source: str, dir:str, size_limit_mb: int = 1024):
     """
     Downloads a yt audio link (use search)
@@ -102,7 +102,7 @@ def downloadVideo(source, dir, quality="high"):
 
 
 def downloadedList(dir, separator=">"):
-    videos = os.listdir(YT_DOWNLOADS_DIR)
+    videos = os.listdir('../files/ytDownloads')
     videos = f"{separator} " + f"\n{separator} ".join(videos)  
     return videos
 

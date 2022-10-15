@@ -1,6 +1,5 @@
 import os
 import json
-from typing import Type
 
 class URLManager:  
     def __init__(self,directory, *args, **kwargs):
