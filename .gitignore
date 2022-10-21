@@ -8,6 +8,8 @@ templates/
 test.*
 botToken.txt
 
+code/modules/MusicPlayer/playlists
+
 #Private Files
 code/config.ini
 priv_*.*

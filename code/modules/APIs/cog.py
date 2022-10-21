@@ -11,7 +11,7 @@ class APIs(commands.Cog, name="APIs Requests"):
     
     def __init__(self, bot, CONFIGS, URLS,**kwargs):
         self.bot = bot
-        self.URLS = URLS
+        self.URL = URLS
         self.poke_api = URLS.get("API","PokeAPI")
         self.weather_api = URLS.get("API","Gael Weather API")
         self.usd_api = URLS.get("API", "Gael Monedas API")

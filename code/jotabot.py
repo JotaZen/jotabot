@@ -43,7 +43,14 @@ def jotabot():
     @bot.command(aliases=["-reload"])
     async def __reloadExtensions(ctx):
         """-reload - Recarga al bot"""
-             
+        
+        CONFIGS = JotabotConfig(config_file='config.ini', default_configs='./utilities/saves/default_configs.ini')
+        URLS = URLManager(CONFIGS.get('URLS', 'directory'))
+        extra_kwargs = {
+            'CONFIGS':CONFIGS,
+            'URLS':URLS
+        } 
+        
         bot.reload_extension("modules.Help.cog")
         for folder in os.listdir("modules"):
             if not (os.path.exists(os.path.join("modules", folder, "cog.py")) and folder != "Help"):

@@ -54,7 +54,13 @@ class Commands1(commands.Cog, name="General Commands"):
         """-clear - Borra hasta 6 mensajes"""
         await ctx.channel.purge(limit = amount + 1) if amount < 6 else False
         
-                
+    @commands.command(aliases=["-id"])
+    async def __my_id(self, ctx):    
+        await ctx.send(f"Tu id de Discord es: {ctx.message.author.id}")
+    
+    @commands.command(aliases=["-guild"])
+    async def __guild_id(self, ctx):    
+        await ctx.send(f"La id del servidor es: {ctx.message.guild.id}")
     #---------Embeds--------#
     
     @commands.command(aliases=["towastc"])
@@ -153,6 +159,7 @@ class Commands1(commands.Cog, name="General Commands"):
         )
         
         await ctx.send(embed=embed)
+
 
 def setup(bot, **kwargs):
     bot.add_cog(Commands1(bot, **kwargs))

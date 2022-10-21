@@ -56,8 +56,7 @@ def search(search: str,console: bool=False,log: bool=True,cant: int=1) -> str:
         
     return links
 
-
-def downloadAudioYT(source: str, dir:str, size_limit_mb: int = 1024):
+def downloadAudioYT(source: str, dir:str, filename:str='', size_limit_mb: int = 1024):
     """
     Downloads a yt audio link (use search)
     returns the path where the file was downloaded
@@ -67,8 +66,9 @@ def downloadAudioYT(source: str, dir:str, size_limit_mb: int = 1024):
     
     if (audio.filesize / 1024 )/1024 > size_limit_mb:
         return LIMIT_EXCEED_MESSAGE
-    
+
     path = audio.download(dir)      
+
     return path
     
 
