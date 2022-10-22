@@ -220,15 +220,8 @@ class MusicPlayer(commands.Cog, name="Music Player"):
         if self.get_status(guild): 
             await ctx.send(f'> Song queued -> {video_title}')
             
-        song_path = []
-        def a(self):
-            song_path.append(yt.downloadAudioYT(source=song_yt_link, size_limit_mb=self.max_audio_size, dir=self.dir))
-       
-        download_thread = threading.Thread(target= a, args=[self])       
-        download_thread.start()
-        while download_thread.is_alive():
-            await asyncio.sleep(4)
-        
+        song_path = yt.downloadAudioYT(source=song_yt_link, size_limit_mb=self.max_audio_size, dir=self.dir)
+   
         self.add_song_to_queue(guild, 
                         song_yt_link, 
                         song_path[0], 
@@ -241,37 +234,32 @@ class MusicPlayer(commands.Cog, name="Music Player"):
              
         else: return
 
-        music_thread = threading.Thread(target= lambda: self.play_song(ctx, voice, guild))    
-        music_thread.run()
-        voice.pause()
-        await asyncio.sleep(1)
-        voice.resume()
-        await ctx.send(f"> Playing: {self.get_current_song(guild)['url']}")
-        
-    def play_song(self, ctx, voice, guild):
         voice.play(
             nextcord.FFmpegPCMAudio(source=self.get_current_song(guild)['path']),
             after=lambda e: self.next_song(ctx, voice, guild)
             )
+           
+        voice.pause()
+        await asyncio.sleep(1)
+        voice.resume()
+        await ctx.send(f"> Playing: {self.get_current_song(guild)['url']}")
+    
 
     async def next_song(self, ctx, voice, guild):
         if len(self.get_queue(guild)) > 0:      
-            self.set_next_song(guild)
-            music_thread = threading.Thread(target= lambda:    
-                voice.play(
+            self.set_next_song(guild)  
+            voice.play(
                     nextcord.FFmpegPCMAudio(source=self.get_current_song(guild)['path']),
                     after=lambda e: self.next_song(ctx, voice, guild)
                 )
-                )
-            music_thread.run()
-            
+    
             voice.pause()
             await asyncio.sleep(1)
             voice.resume()
             
             await ctx.send(f"> Playing: {self.get_current_song(guild)['url']}")     
         else: 
-            self.set_status(False)
+            self.set_status(guild, False)
 
     @commands.command(aliases=["-pause", "-play"])
     async def __pause(self, ctx): 
