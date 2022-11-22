@@ -5,15 +5,10 @@ import os
 
 import threading
 
-
-# MUST CHANGE TO A CONFIG FILE 
 YOUTUBE_URL = 'https://www.youtube.com'
-RICKROLL = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ'
-ERROR_LOG_REQUEST = 'Pytube Error -> Request  in yTube.py'
-ERROR_NOT_FOUND = 'Not avaliable'
-AUDIO_SIZE_LIMIT_MB = 30
-LIMIT_EXCEED_MESSAGE = 'Size exceed'
-
+ERROR_LOG_REQUEST = 'a'
+LIMIT_EXCEED_MESSAGE = 'mucho'
+ERROR_NOT_FOUND = 'a'
 
 source = lambda source: YouTube(source)
 
@@ -47,9 +42,6 @@ def search(search: str,console: bool=False,log: bool=True,cant: int=1) -> str:
     except: 
         if log == True: 
             print(ERROR_LOG_REQUEST)     
-        
-    if search_results == []:
-        return [RICKROLL]
       
     links = [f"{YOUTUBE_URL}/watch\?v={search_results[i]}" 
              for i in (range(cant if cant < len(search_results) else len(search_results)))] 
@@ -66,9 +58,8 @@ def downloadAudioYT(source: str, dir:str, filename:str='', size_limit_mb: int = 
     
     if (audio.filesize / 1024 )/1024 > size_limit_mb:
         return LIMIT_EXCEED_MESSAGE
-
+    
     path = audio.download(dir)      
-
     return path
     
 

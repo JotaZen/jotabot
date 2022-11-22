@@ -14,7 +14,7 @@ class JotabotConfig(configparser.ConfigParser):
         self.config_file = config_file
         self.default_configs = default_configs     
        
-        if not os.path.exists(f'./{self.config_file}'):       
+        if not os.path.exists(f'{self.config_file}'):       
             with open(config_file, "x") as cfg:
                 with open(self.default_configs, 'r') as dft:
                     cfg.write(dft.read())              

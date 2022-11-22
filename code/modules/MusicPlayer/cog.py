@@ -30,7 +30,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     #                                               #
     #################################################   
     
-    def read_json_file(self):
+    def read_json_file(self):                           #care with the recursion
         try: 
             with open(self.playlist, 'r') as f:
                 return json.load(f)  
@@ -42,13 +42,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
     def write_json_file(self,  DATA):
         with open(self.playlist, 'w') as f:
             json.dump(DATA, f, indent=4)
-    
-    def change_status_to_all_playlists(self, status):
-        playlist = self.read_json_file()
-        for i in playlist:
-            playlist[i]['active'] = status
-        self.write_json_file(playlist)  
-    
+        
     def get_playlist(self, guild: str, guild_only: bool=False) -> dict: 
         playlist = self.read_json_file()
         if not guild in playlist:
@@ -67,18 +61,38 @@ class MusicPlayer(commands.Cog, name="Music Player"):
             )
             self.write_json_file(playlist)          
                     
-        if guild_only: return playlist[guild]     
-        return playlist
+#        if guild_only: return playlist[guild]     
+        return playlist if not guild_only else playlist[guild] 
 
     def get_status(self, guild):
         playlist = self.get_playlist(guild, guild_only=True)
-        return playlist['active']
+        if not guild in playlist:
+            playlist.update(
+                {  
+                    guild : {
+                        "active": False,
+                        "settings": {
+                                "shuffle": False
+                            },
+                        "current": {},
+                        "queue" : [],
+                        "previous" : []
+                    }
+                }
+            )
+        return playlist[guild]['active']
     
     def set_status(self, guild, status):
         playlist = self.get_playlist(guild)
         playlist[guild]['active'] = status
         self.write_json_file(playlist)
-    
+
+    def change_status_to_all_playlists(self, status):
+        playlist = self.read_json_file()
+        for i in playlist:
+            playlist[i]['active'] = status
+        self.write_json_file(playlist)  
+         
     def get_current_song(self, guild): 
         playlist = self.get_playlist(guild, guild_only=True)
         return playlist['current']
@@ -224,7 +238,7 @@ class MusicPlayer(commands.Cog, name="Music Player"):
    
         self.add_song_to_queue(guild, 
                         song_yt_link, 
-                        song_path[0], 
+                        song_path, 
                         video_title) 
         
         if not self.get_status(guild): 
