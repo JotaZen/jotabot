@@ -3,9 +3,8 @@ temp/
 venv/
 templates/
 
-*.code-workspace
-
 test.*
+test_*.*
 botToken.txt
 
 code/modules/MusicPlayer/playlists
@@ -23,3 +22,6 @@ files/pdf/*.pdf
 
 # intellij configs
 .idea/
+
+# VSCode
+*.code-workspace

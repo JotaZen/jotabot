@@ -16,11 +16,17 @@ def jotabot():
     }
     bot = commands.Bot(command_prefix=CONFIGS.get('Jotabot', 'command_prefix'), intents=discord.Intents.all())
     Cogs = []
- 
-    with open(CONFIGS.get('Jotabot', 'TOKEN'), "r") as f:
-        TOKEN = f.read()
+    
+    try:
+        with open(CONFIGS.get('Jotabot', 'TOKEN'), "r") as f:
+            TOKEN = f.read()     
+    except KeyError:
+        TOKEN = input("DISCORD TOKEN: ")
+        with open(CONFIGS.get('Jotabot', 'TOKEN'), "w") as f:
+            f.write(TOKEN)
+    finally:
         print(f'TOKEN = "{TOKEN[0:10]}..."')  
-         
+
     @bot.event
     async def on_message(message):
         if message.author == bot.user: return
